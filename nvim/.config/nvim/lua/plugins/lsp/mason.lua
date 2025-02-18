@@ -45,6 +45,7 @@ return {
         "isort", -- python formatter
         "black", -- python formatter
         "shellcheck", -- shell script linter
+        "selene", -- lua linter
       },
     })
   end,

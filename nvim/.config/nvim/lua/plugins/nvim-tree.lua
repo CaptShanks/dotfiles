@@ -76,6 +76,20 @@ return {
           end
         end
       end, opts("Search in directory"))
+
+      -- toggle folder or open file on left click
+      vim.keymap.set("n", "<LeftRelease>", function ()
+         local node = api.tree.get_node_under_cursor()
+         if node then
+           if node.nodes ~= nil then
+               -- Toggle folder (expand/collapse)
+               api.node.open.edit()
+           else
+               -- Open file normally
+               api.node.open.edit()
+           end
+         end
+      end, opts("Toggle Folder or Open file on left click"))
     end
 
     -- https://github.com/nvim-tree/nvim-tree.lua/blob/master/lua/nvim-tree.lua#L342
