@@ -35,6 +35,7 @@ return {
         "terraformls",
         "helm_ls",
         "jedi_language_server",
+        "gopls",
       },
     })
 
@@ -46,6 +47,8 @@ return {
         "black", -- python formatter
         "shellcheck", -- shell script linter
         "selene", -- lua linter
+        "markdownlint", -- markdown linter
+        "yamllint", -- yaml linter
       },
     })
   end,

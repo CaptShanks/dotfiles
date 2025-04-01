@@ -24,7 +24,7 @@ return {
 
         if mode == "dark" then
           vim.o.background = "dark" -- or "light" for light mode
-          vim.cmd([[colorscheme gruvbox]])
+          vim.cmd([[colorscheme doom-miramare]])
           -- do something
           -- run shell commands:
           -- tmux set -g @catppuccin_flavour 'latte'
@@ -33,7 +33,7 @@ return {
           -- vim.api.nvim_command("silent \"!tmux run '~/.tmux/plugins/tpm/tpm'\"")
         else
           vim.o.background = "light" -- or "light" for light mode
-          vim.cmd([[colorscheme gruvbox]])
+          vim.cmd([[colorscheme dawnfox]])
           -- vim.api.nvim_command("silent \"!tmux set -g @catppuccin_flavour 'latte'\"")
           -- vim.api.nvim_command("silent \"!tmux run '~/.tmux/plugins/tpm/tpm'\"")
         end

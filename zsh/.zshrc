@@ -215,6 +215,7 @@ alias ll='ls -lah'
 
 # aws profile selector
 alias aws-profile='export AWS_PROFILE=$(aws configure list-profiles | fzf)'
+export AWS_PROFILE="gen3-com-root"
 # kubectl context selector
 alias kctx='kubectl config use-context $(kubectl config get-contexts -o name | fzf)'
 
@@ -268,7 +269,7 @@ bindkey '^L' clearx
 				tmux new-window -d -t 5 -n "ghix_devops" -c "$HOME/Documents/ghix_devops/"
 				tmux new-window -d -t 6 -n "temp" -c "$HOME/temp"
 				tmux new-window -d -t 7 -n "Downloads" -c "$HOME/Downloads"
-				tmux new-window -d -t 9 -n "open" -c "$HOME"
+				tmux new-window -d -t 8 -n "open" -c "$HOME"
 				# attach to new session
 				tmux attach-session -t 0
 			fi
@@ -288,3 +289,20 @@ export PATH="${HOME}/.local/bin":${PATH}
 
 export PATH="/usr/local/bin:$PATH"
 . "/Users/sjc-lp03742/.deno/env"
+
+export K9S_CONFIG_DIR="$HOME/.config/k9s"
+
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/opt/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/opt/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/opt/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<

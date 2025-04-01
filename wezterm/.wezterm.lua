@@ -69,6 +69,9 @@ config.keys = {
 	{ key = "F9", mods = "", action = wezterm.action.ShowTabNavigator },
 }
 
+-- config.modifier_keys = {
+--   OPT = "Meta"
+-- }
 -- config.colors = {}
 
 -- background blur
