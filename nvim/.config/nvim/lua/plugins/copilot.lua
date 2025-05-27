@@ -6,7 +6,7 @@ return {
   opts = {
     -- for lua-cmp
     suggestion = {
-      enabled = true,
+      enabled = false,
       auto_trigger = true,
       hide_during_completion = true,
       debounce = 75,
@@ -19,7 +19,7 @@ return {
         dismiss = "<M-h>",
       },
     },
-    -- panel = { enabled = false },
+    panel = { enabled = false },
     -- filetypes
     -- https://github.com/zbirenbaum/copilot.lua?tab=readme-ov-file#filetypes
     filetypes = {
