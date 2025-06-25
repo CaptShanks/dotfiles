@@ -47,6 +47,14 @@ return {
     end,
   },
   {
+    "rebelot/kanagawa.nvim",
+    priority = 1000,
+    config = function()
+      -- Set the colorscheme
+      -- vim.cmd("colorscheme kanagawa")
+    end,
+  },
+  {
     "EdenEast/nightfox.nvim",
     priority = 1000,
     config = true,

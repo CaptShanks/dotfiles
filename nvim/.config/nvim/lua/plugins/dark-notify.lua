@@ -33,7 +33,7 @@ return {
           -- vim.api.nvim_command("silent \"!tmux run '~/.tmux/plugins/tpm/tpm'\"")
         else
           vim.o.background = "light" -- or "light" for light mode
-          vim.cmd([[colorscheme dawnfox]])
+          vim.cmd([[colorscheme gruvbox]])
           -- vim.api.nvim_command("silent \"!tmux set -g @catppuccin_flavour 'latte'\"")
           -- vim.api.nvim_command("silent \"!tmux run '~/.tmux/plugins/tpm/tpm'\"")
         end
