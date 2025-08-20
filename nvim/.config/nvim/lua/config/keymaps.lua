@@ -9,7 +9,7 @@ vim.api.nvim_set_keymap("v", "p", '"_dP', { noremap = true, silent = true })
 
 -- use jk to exit insert mode
 -- keymap.set({ "i", "v" }, "jk", "<ESC>", { desc = "Exit insert mode with jk" })
-keymap.set({ "i"}, "jj", "<ESC>", { desc = "Exit insert mode with jj" })
+keymap.set({ "i" }, "jj", "<ESC>", { desc = "Exit insert mode with jj" })
 --
 -- delete single character without copying into register
 keymap.set("n", "x", '"_x')
@@ -63,7 +63,7 @@ keymap.set("n", "<leader>qp", "<cmd>cprev<CR>", { desc = "Go to previous quickfi
 -- keymap.set("n", "<leader>ff", "<cmd>Telescope find_files follow=true<cr>", { desc = "Fuzzy find files in cwd" })
 keymap.set("n", "<leader> ", function()
   require("fzf-lua").files({
-    resume = false
+    resume = false,
   })
 end, { desc = "Fuzzy find files in cwd" })
 
@@ -360,14 +360,18 @@ vim.api.nvim_create_user_command("TmuxOpenOpencodePane", function(arg)
   end
   -- Fallback to embedded if not in tmux
   if not vim.env.TMUX then
-    local ok, mod = pcall(require, 'opencode')
-    if ok then mod.toggle() else print('opencode not available') end
+    local ok, mod = pcall(require, "opencode")
+    if ok then
+      mod.toggle()
+    else
+      print("opencode not available")
+    end
     return
   end
-  local splitType = argStr:sub(1,1) == 'v' and '-v' or '-h'
-  local dir = (argStr:sub(2,2) == 'c') and vim.fn.getcwd() or vim.fn.expand('%:p:h')
-  if dir == '' then
-    print('Directory empty')
+  local splitType = argStr:sub(1, 1) == "v" and "-v" or "-h"
+  local dir = (argStr:sub(2, 2) == "c") and vim.fn.getcwd() or vim.fn.expand("%:p:h")
+  if dir == "" then
+    print("Directory empty")
     return
   end
   -- Look for existing opencode pane
@@ -375,9 +379,9 @@ vim.api.nvim_create_user_command("TmuxOpenOpencodePane", function(arg)
   if vim.v.shell_error == 0 then
     for _, line in ipairs(list) do
       local id, cmd = line:match("^(%%[%w%-_]+)%s+(%S+)")
-      if cmd == 'opencode' then
+      if cmd == "opencode" then
         os.execute(string.format("tmux select-pane -t %s", id))
-        print('Focused existing opencode pane')
+        print("Focused existing opencode pane")
         return
       end
     end
@@ -386,16 +390,22 @@ vim.api.nvim_create_user_command("TmuxOpenOpencodePane", function(arg)
   local ok = os.execute(tmuxCommand)
   if ok then
     os.execute("tmux select-pane -T opencode")
-    print('Opened opencode in tmux pane at ' .. dir)
+    print("Opened opencode in tmux pane at " .. dir)
   else
-    print('Failed to open tmux pane; falling back to embedded opencode')
-    local ok2, mod = pcall(require, 'opencode')
-    if ok2 then mod.toggle() end
+    print("Failed to open tmux pane; falling back to embedded opencode")
+    local ok2, mod = pcall(require, "opencode")
+    if ok2 then
+      mod.toggle()
+    end
   end
 end, { nargs = 1, desc = "Open/focus opencode in tmux split (vc|hc|vb|hb)" })
 
 -- <leader>ot to open/focus opencode in vertical split using buffer dir
-keymap.set({ 'n', 'v' }, '<leader>ot', ':TmuxOpenOpencodePane vb<CR>', { noremap = true, silent = true, desc = 'Open/focus opencode (tmux pane)' })
+keymap.set({ "n", "v" }, "<leader>ot", ":TmuxOpenOpencodePane hb<CR>", {
+  noremap = true,
+  silent = true,
+  desc = "Open/focus opencode (tmux pane)",
+})
 
 -- sV to create a new tmux pane vertically with the current buffer directory or current working directory
 keymap.set({ "n", "v" }, "<leader>sV", ":TmuxNewPaneDir vb<CR>", {
