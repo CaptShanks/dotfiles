@@ -324,6 +324,7 @@ keymap.set({ "n", "v" }, "q:", "<cmd>FzfLua command_history<cr>", { desc = "Comm
 keymap.set({ "n", "v" }, "<leader>:", "<cmd>FzfLua commands<cr>", { desc = "FzfLua commands" })
 
 -- Create a new tmux pane with the current file's directory or current working directory
+-- (vc|hc|vb|hb) v/h = vertical/horizontal, c/b = cwd/buffer dir
 vim.api.nvim_create_user_command("TmuxNewPaneDir", function(arg)
   local argStr = arg.args
   if not (argStr == "vc" or argStr == "hc" or argStr == "vb" or argStr == "hb") then
@@ -349,6 +350,52 @@ vim.api.nvim_create_user_command("TmuxNewPaneDir", function(arg)
   os.execute(tmuxCommand)
   print("Created new tmux pane in directory " .. dir)
 end, { nargs = 1, desc = "Create a new tmux pane with the current file's directory or current working directory" })
+
+-- Open/focus opencode in a tmux pane (uses same arg scheme as TmuxNewPaneDir)
+vim.api.nvim_create_user_command("TmuxOpenOpencodePane", function(arg)
+  local argStr = arg.args
+  if not (argStr == "vc" or argStr == "hc" or argStr == "vb" or argStr == "hb") then
+    print("Invalid argument. Use vc|hc|vb|hb (v/h split, c cwd, b buffer dir).")
+    return
+  end
+  -- Fallback to embedded if not in tmux
+  if not vim.env.TMUX then
+    local ok, mod = pcall(require, 'opencode')
+    if ok then mod.toggle() else print('opencode not available') end
+    return
+  end
+  local splitType = argStr:sub(1,1) == 'v' and '-v' or '-h'
+  local dir = (argStr:sub(2,2) == 'c') and vim.fn.getcwd() or vim.fn.expand('%:p:h')
+  if dir == '' then
+    print('Directory empty')
+    return
+  end
+  -- Look for existing opencode pane
+  local list = vim.fn.systemlist("tmux list-panes -F '#{pane_id} #{pane_current_command}'")
+  if vim.v.shell_error == 0 then
+    for _, line in ipairs(list) do
+      local id, cmd = line:match("^(%%[%w%-_]+)%s+(%S+)")
+      if cmd == 'opencode' then
+        os.execute(string.format("tmux select-pane -t %s", id))
+        print('Focused existing opencode pane')
+        return
+      end
+    end
+  end
+  local tmuxCommand = string.format("tmux split-window %s -c '%s' 'opencode'", splitType, dir)
+  local ok = os.execute(tmuxCommand)
+  if ok then
+    os.execute("tmux select-pane -T opencode")
+    print('Opened opencode in tmux pane at ' .. dir)
+  else
+    print('Failed to open tmux pane; falling back to embedded opencode')
+    local ok2, mod = pcall(require, 'opencode')
+    if ok2 then mod.toggle() end
+  end
+end, { nargs = 1, desc = "Open/focus opencode in tmux split (vc|hc|vb|hb)" })
+
+-- <leader>ot to open/focus opencode in vertical split using buffer dir
+keymap.set({ 'n', 'v' }, '<leader>ot', ':TmuxOpenOpencodePane vb<CR>', { noremap = true, silent = true, desc = 'Open/focus opencode (tmux pane)' })
 
 -- sV to create a new tmux pane vertically with the current buffer directory or current working directory
 keymap.set({ "n", "v" }, "<leader>sV", ":TmuxNewPaneDir vb<CR>", {

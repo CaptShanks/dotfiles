@@ -6,8 +6,9 @@ return {
     -- Your configuration, if any
   },
   -- stylua: ignore
-  keys = {
-    { '<leader>ot', function() require('opencode').toggle() end, desc = 'Toggle embedded opencode', },
+  keys = { -- <leader>ot mapping moved to user command in keymaps.lua
+    -- Open or focus opencode in a tmux pane (horizontal split below). Fallback to embedded if not in tmux.
+
     { '<leader>oa', function() require('opencode').ask('@cursor: ') end, desc = 'Ask opencode', mode = 'n', },
     { '<leader>oa', function() require('opencode').ask('@selection: ') end, desc = 'Ask opencode about selection', mode = 'v', },
     { '<leader>op', function() require('opencode').select_prompt() end, desc = 'Select prompt', mode = { 'n', 'v', }, },
