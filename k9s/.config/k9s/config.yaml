@@ -6,8 +6,8 @@ k9s:
   readOnly: false
   noExitOnCtrlC: false
   portForwardAddress: localhost
-  k9s.ui.skin: dracula
   ui:
+    skin: dracula
     enableMouse: false
     headless: false
     logoless: false

@@ -1,0 +1,51 @@
+# plugin to easily open eks-node-viewer on viewed context
+# requires eks-node-viewer installed on system
+# https://github.com/awslabs/eks-node-viewer/
+plugins:
+  #--- Create debug container for selected pod in current namespace
+  # See https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container
+  debug:
+    shortCut: Shift-D
+    description: Add debug container
+    dangerous: true
+    scopes:
+      - containers
+    command: bash
+    background: false
+    confirm: true
+    args:
+      - -c
+      - "kubectl --kubeconfig=$KUBECONFIG debug -it --context $CONTEXT -n=$NAMESPACE $POD --target=$NAME --image=tyagsha/toolbox:0.1.0 --share-processes -- bash"
+  remove_finalizers:
+    shortCut: Ctrl-F
+    confirm: true
+    dangerous: true
+    scopes:
+      - all
+    description: |
+      Removes finalizers
+    command: kubectl
+    background: true
+    args:
+      - patch
+      - --context
+      - $CONTEXT
+      - --namespace
+      - $NAMESPACE
+      - $RESOURCE_NAME.$RESOURCE_GROUP
+      - $NAME
+      - -p
+      - '{"metadata":{"finalizers":null}}'
+      - --type
+      - merge
+  eks-node-viewer:
+    shortCut: Shift-X
+    description: "eks-node-viewer"
+    scopes:
+      - node
+    background: false
+    command: bash
+    args:
+    - -c
+    - |
+      env $(kubectl config view --context $CONTEXT --minify -o json | jq -r ".users[0].user.exec.env[] | select(.name == \"AWS_PROFILE\") | \"AWS_PROFILE=\" + .value" && kubectl config view --context $CONTEXT --minify -o json | jq -r ".users[0].user.exec.args | \"AWS_REGION=\" + .[1]") eks-node-viewer --context $CONTEXT --resources cpu,memory --extra-labels karpenter.sh/nodepool,eks-node-viewer/node-age --node-sort=creation=dsc

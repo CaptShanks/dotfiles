@@ -3,12 +3,12 @@ local config = {}
 local act = wezterm.action
 
 -- font
-config.font = wezterm.font("Hack Nerd Font Propo", {})
+config.font = wezterm.font("FiraCode Nerd Font Propo", {})
 config.font_size = 16
+config.line_height = 1.40
 
 -- scrollback
-config.scrollback_lines = 1000000
-
+config.scrollback_lines = 10000
 -- wezterm.gui is not available to the mux server, so take care to
 -- do something reasonable when this config is evaluated by the mux
 local function get_appearance()
@@ -28,6 +28,18 @@ end
 
 config.color_scheme = scheme_for_appearance(get_appearance())
 
+local function mode_overrides(appearance)
+	local overrides_appearance = {}
+	if appearance:find("Dark") then
+		overrides_appearance.color_scheme = "Catppuccin Mocha (Gogh)"
+		overrides_appearance.background = "#1e1e2e"
+	else
+		overrides_appearance.color_scheme = "Catppuccin Latte (Gogh)"
+		overrides_appearance.background = "#eff1f5"
+	end
+	return overrides_appearance
+end
+
 wezterm.on("window-config-reloaded", function(window, _)
 	local overrides = window:get_config_overrides() or {}
 	local appearance = window:get_appearance()
@@ -35,9 +47,9 @@ wezterm.on("window-config-reloaded", function(window, _)
 	local scheme = overrides_appearance.color_scheme
 	if overrides.color_scheme ~= scheme then
 		overrides.color_scheme = scheme
-		-- overrides.colors = {
-		-- 	background = overrides_appearance.background,
-		-- }
+		overrides.colors = {
+			background = overrides_appearance.background,
+		}
 		window:set_config_overrides(overrides)
 	end
 end)
@@ -55,9 +67,8 @@ config.window_padding = {
 }
 
 config.keys = {
-	-- This will create a new split and run the `top` program inside it
 	{
-		key = '"',
+		key = "h",
 		mods = "CMD|SHIFT",
 		action = wezterm.action.SplitHorizontal({ domain = "CurrentPaneDomain" }),
 	},
@@ -67,6 +78,16 @@ config.keys = {
 		action = act.SpawnTab("CurrentPaneDomain"),
 	},
 	{ key = "F9", mods = "", action = wezterm.action.ShowTabNavigator },
+	{
+		key = "w",
+		mods = "CMD",
+		action = wezterm.action.CloseCurrentPane({ confirm = false }),
+	},
+	{
+		key = "8",
+		mods = "CTRL",
+		action = act.PaneSelect,
+	},
 }
 
 -- config.modifier_keys = {

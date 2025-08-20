@@ -1,0 +1,11 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+  "theme": "tokyonight",
+    "lsp": {
+    "terraform": {
+      "disabled": false,
+      "command" : ["/Users/sjc-lp03742/.vscode/extensions/hashicorp.terraform-2.34.5-darwin-arm64/bin/terraform-ls", "serve"],
+      "extensions": [".tf", ".tfvars"]
+    }
+  }
+}

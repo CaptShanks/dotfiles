@@ -24,7 +24,7 @@ return {
 
         if mode == "dark" then
           vim.o.background = "dark" -- or "light" for light mode
-          vim.cmd([[colorscheme doom-miramare]])
+          vim.cmd([[colorscheme gruvbox-dark]])
           -- do something
           -- run shell commands:
           -- tmux set -g @catppuccin_flavour 'latte'

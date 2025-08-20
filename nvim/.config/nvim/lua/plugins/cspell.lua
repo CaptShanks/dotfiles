@@ -16,5 +16,6 @@ return {
       )
       table.insert(opts.sources, cspell.code_actions)
     end,
+    enabled = false
   },
 }
