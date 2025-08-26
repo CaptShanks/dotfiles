@@ -117,31 +117,41 @@ return {
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
     end
 
-    -- KCL, Install language server from Brew, dont use mason: https://github.com/kcl-lang/kcl.nvim/issues/18
-    lspconfig.kcl.setup({})
+    -- Dynamic per-server configuration discovery
+    local server_dir = vim.fn.stdpath('config') .. '/lua/plugins/lsp/servers'
+    local server_files = {}
+    local scan_ok, fs = pcall(require, 'plenary.scandir')
+    if scan_ok then
+      server_files = fs.scan_dir(server_dir, { depth = 1, add_dirs = false, search_pattern = '%.lua$' })
+    else
+      -- fallback to vim.loop if plenary missing
+      local uv = vim.loop
+      local fd = uv.fs_scandir(server_dir)
+      if fd then
+        while true do
+          local name, t = uv.fs_scandir_next(fd)
+          if not name then break end
+            if name:match('%.lua$') then
+              table.insert(server_files, server_dir .. '/' .. name)
+            end
+        end
+      end
+    end
 
-    -- helm https://github.com/mrjosh/helm-ls?tab=readme-ov-file#nvim-lspconfig-setup
-    lspconfig.helm_ls.setup({
-      settings = {
-        ["helm-ls"] = {
-          yamlls = {
-            path = "yaml-language-server",
-            config = {
-              schemas = {
-                kubernetes = "**/templates/**",
-              },
-              completion = true,
-              hover = true,
-              -- any other config from https://github.com/redhat-developer/yaml-language-server#language-server-settings
-            },
-          },
-        },
-      },
-    })
-
+    local per_server = {}
+    for _, filepath in ipairs(server_files) do
+      local modname = filepath:match('plugins/lsp/(servers/.+)%.lua$')
+      if modname then
+        local ok, conf = pcall(require, 'plugins.lsp.' .. modname:gsub('/', '.'))
+        if ok and type(conf) == 'table' then
+          local server = conf.name or filepath:match('([^/]+)%.lua$')
+          per_server[server] = conf
+        end
+      end
+    end
 
     -- Setup servers via mason-lspconfig (ensure mason already configured above)
-    local ensure = { "bashls", "html", "cssls", "lua_ls", "graphql", "terraformls", "helm_ls", "gopls", "jedi_language_server" }
+    local ensure = { "bashls", "lua_ls", "graphql", "terraformls", "helm_ls", "gopls", "pyright", "yamlls" }
 
     -- Rotate LSP log automatically if > 50MB when loading this plugin
     do
@@ -158,39 +168,25 @@ return {
     end
 
     mason_lspconfig.setup({
-      -- (Reverted) previously patched terraformls extra filetypes tf/tfvars.
       ensure_installed = ensure,
       handlers = {
         function(server_name)
-          lspconfig[server_name].setup({ capabilities = capabilities })
-        end,
-        terraformls = function()
-          lspconfig.terraformls.setup({
-            capabilities = capabilities,
-          })
-        end,
-        graphql = function()
-          lspconfig.graphql.setup({
-            capabilities = capabilities,
-            filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-          })
-        end,
-        lua_ls = function()
-          lspconfig.lua_ls.setup({
-            capabilities = capabilities,
-            settings = {
-              Lua = {
-                diagnostics = { globals = { "vim" } },
-                completion = { callSnippet = "Replace" },
-              },
-            },
-          })
-        end,
-        bashls = function()
-          lspconfig.bashls.setup({ capabilities = capabilities })
+          local conf = per_server[server_name] or {}
+          conf.capabilities = vim.tbl_deep_extend('force', capabilities, conf.capabilities or {})
+          if conf.on_attach == nil then
+            -- rely on LspAttach autocmd for keymaps; allow custom on_attach in file
+          end
+          lspconfig[server_name].setup(conf)
         end,
       },
     })
+
+    -- Manually setup servers not managed by mason (e.g., kcl)
+    if per_server["kcl"] then
+      local conf = per_server["kcl"]
+      conf.capabilities = vim.tbl_deep_extend('force', capabilities, conf.capabilities or {})
+      lspconfig.kcl.setup(conf)
+    end
 
     return -- done
   end,
