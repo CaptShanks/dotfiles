@@ -24,18 +24,11 @@ return {
 
         if mode == "dark" then
           vim.o.background = "dark" -- or "light" for light mode
-          vim.cmd([[colorscheme gruvbox-dark]])
-          -- do something
-          -- run shell commands:
-          -- tmux set -g @catppuccin_flavour 'latte'
-          -- tmux run '~/.tmux/plugins/tpm/tpm'
-          -- vim.api.nvim_command("silent \"!tmux set -g @catppuccin_flavour 'mocha'\"")
-          -- vim.api.nvim_command("silent \"!tmux run '~/.tmux/plugins/tpm/tpm'\"")
+          vim.cmd([[colorscheme tokyonight-night]])
         else
           vim.o.background = "light" -- or "light" for light mode
-          vim.cmd([[colorscheme gruvbox]])
-          -- vim.api.nvim_command("silent \"!tmux set -g @catppuccin_flavour 'latte'\"")
-          -- vim.api.nvim_command("silent \"!tmux run '~/.tmux/plugins/tpm/tpm'\"")
+          vim.cmd([[colorscheme tokyonight-night]])
+          -- vim.cmd([[colorscheme gruvbox]])
         end
 
         -- for all windows except the current one, set background based on dark mode

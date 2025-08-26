@@ -11,8 +11,8 @@ return {
       typescriptreact = { "eslint_d" },
       svelte = { "eslint_d" },
       python = { "pylint" },
-      terraform = { "tflint" },
-      markdown = { "markdownlint" },
+      -- terraform = { "tflint" },
+      -- markdown = { "markdownlint" },
     }
 
     -- markdown lint disable some rules https://github.com/markdownlint/markdownlint/blob/main/docs/RULES.md
