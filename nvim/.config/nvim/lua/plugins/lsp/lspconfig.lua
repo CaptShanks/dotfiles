@@ -13,6 +13,12 @@ return {
     -- import lspconfig plugin
     local lspconfig = require("lspconfig")
 
+    -- remove builtin copilot lspconfig (to avoid duplicate client with copilot.lua)
+    local ok_configs, configs = pcall(require, "lspconfig.configs")
+    if ok_configs and configs.copilot then
+      configs.copilot = nil
+    end
+
     -- import mason_lspconfig plugin
     local mason_lspconfig = require("mason-lspconfig")
 
