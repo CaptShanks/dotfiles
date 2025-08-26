@@ -2,6 +2,8 @@ return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
+    { "williamboman/mason.nvim", config = function() require("mason").setup() end },
+    "williamboman/mason-lspconfig.nvim",
     "hrsh7th/cmp-nvim-lsp",
     { "antosha417/nvim-lsp-file-operations", config = true },
     { "folke/neodev.nvim", opts = {} },
@@ -70,16 +72,7 @@ return {
       end,
     })
 
-    -- enable language server for bash https://github.com/bash-lsp/bash-language-server?tab=readme-ov-file#neovim
-    vim.api.nvim_create_autocmd("FileType", {
-      pattern = "sh",
-      callback = function()
-        vim.lsp.start({
-          name = "bash-language-server",
-          cmd = { "bash-language-server", "start" },
-        })
-      end,
-    })
+    -- bashls will be installed & started via mason-lspconfig handlers (no manual autostart needed)
 
     -- used to enable autocompletion (assign to every lsp server config)
     local capabilities = cmp_nvim_lsp.default_capabilities()
@@ -133,122 +126,58 @@ return {
       end, 100)
     end, { desc = "Restart active LSP servers except Copilot" })
 
-    -- Guard against mason-lspconfig not loaded yet
-    if not mason_lspconfig.setup_handlers then
-      -- fallback to newer API style using setup({ handlers = ... }) if available
-      if mason_lspconfig.setup then
-        mason_lspconfig.setup({
-          handlers = {
-            function(server_name)
-              lspconfig[server_name].setup({ capabilities = capabilities })
-            end,
-            terraformls = function()
-              lspconfig["terraformls"].setup({
-                capabilities = capabilities,
-                filetypes = { "terraform", "terraform-vars", "tf", "tfvars" },
-              })
-            end,
-            graphql = function()
-              lspconfig["graphql"].setup({
-                capabilities = capabilities,
-                filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-              })
-            end,
-            lua_ls = function()
-              lspconfig["lua_ls"].setup({
-                capabilities = capabilities,
-                settings = {
-                  Lua = {
-                    diagnostics = { globals = { "vim" } },
-                    completion = { callSnippet = "Replace" },
-                  },
-                },
-              })
-            end,
-            bashls = function()
-              lspconfig["bashls"].setup({ capabilities = capabilities })
-            end,
-          },
-        })
-      else
-        vim.notify("mason-lspconfig missing setup_handlers/setup; is plugin installed?", vim.log.levels.WARN)
-      end
-      return
+    -- Setup servers via mason-lspconfig (ensure mason already configured above)
+    local ensure = { "bashls", "html", "cssls", "lua_ls", "graphql", "terraformls", "helm_ls", "gopls", "jedi_language_server" }
+
+    -- Rotate LSP log automatically if > 50MB when loading this plugin
+    do
+      local log = vim.lsp.log.get_filename()
+      pcall(function()
+        local stat = vim.loop.fs_stat(log)
+        if stat and stat.size > 50 * 1024 * 1024 then
+          local suffix = os.date('%Y%m%d-%H%M%S')
+          local rotated = log .. '.' .. suffix
+          os.rename(log, rotated)
+          vim.notify(('Rotated large LSP log (%.1f MB) to %s'):format(stat.size/1024/1024, rotated), vim.log.levels.WARN)
+        end
+      end)
     end
 
-    mason_lspconfig.setup_handlers({
-      -- default handler for installed servers
-      function(server_name)
-        lspconfig[server_name].setup({
-          capabilities = capabilities,
-        })
-      end,
-      -- ["svelte"] = function()
-      --   -- configure svelte server
-      --   lspconfig["svelte"].setup({
-      --     capabilities = capabilities,
-      --     on_attach = function(client, bufnr)
-      --       vim.api.nvim_create_autocmd("BufWritePost", {
-      --         pattern = { "*.js", "*.ts" },
-      --         callback = function(ctx)
-      --           -- Here use ctx.match instead of ctx.file
-      --           client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.match })
-      --         end,
-      --       })
-      --     end,
-      --   })
-      -- end,
-      ["terraformls"] = function()
-        -- configure terraform server
-        lspconfig["terraformls"].setup({
-          capabilities = capabilities,
-          filetypes = { "terraform", "terraform-vars", "tf", "tfvars" },
-        })
-      end,
-
-      ["graphql"] = function()
-        -- configure graphql language server
-        lspconfig["graphql"].setup({
-          capabilities = capabilities,
-          filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-        })
-      end,
-      -- ["emmet_ls"] = function()
-      --   -- configure emmet language server
-      --   lspconfig["emmet_ls"].setup({
-      --     capabilities = capabilities,
-      --     filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
-      --   })
-      -- end,
-      ["lua_ls"] = function()
-        -- configure lua server (with special settings)
-        lspconfig["lua_ls"].setup({
-          capabilities = capabilities,
-          settings = {
-            Lua = {
-              -- make the language server recognize "vim" global
-              diagnostics = {
-                globals = { "vim" },
-              },
-              completion = {
-                callSnippet = "Replace",
+    mason_lspconfig.setup({
+      ensure_installed = ensure,
+      handlers = {
+        function(server_name)
+          lspconfig[server_name].setup({ capabilities = capabilities })
+        end,
+        terraformls = function()
+          lspconfig.terraformls.setup({
+            capabilities = capabilities,
+            filetypes = { "terraform", "terraform-vars", "tf", "tfvars" },
+          })
+        end, -- added tf/tfvars explicitly
+        graphql = function()
+          lspconfig.graphql.setup({
+            capabilities = capabilities,
+            filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
+          })
+        end,
+        lua_ls = function()
+          lspconfig.lua_ls.setup({
+            capabilities = capabilities,
+            settings = {
+              Lua = {
+                diagnostics = { globals = { "vim" } },
+                completion = { callSnippet = "Replace" },
               },
             },
-          },
-        })
-      end,
-
-      ["bashls"] = function()
-        lspconfig["bashls"].setup({
-          capabilities = capabilities,
-        })
-      end, -- add handler for bash laguage server
-
-      -- ["copilot"] = function()
-      --   lspconfig["copilot"].setup({
-      --     capabilities = capabilities,
-      --   })
-      -- end,
+          })
+        end,
+        bashls = function()
+          lspconfig.bashls.setup({ capabilities = capabilities })
+        end,
+      },
     })
+
+    return -- done
   end,
 }
