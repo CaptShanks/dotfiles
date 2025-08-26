@@ -24,6 +24,31 @@ return {
     local mason_lspconfig = require("mason-lspconfig")
 
     -- import cmp-nvim-lsp plugin
+
+    -- Wrapper restart with notification
+    vim.api.nvim_create_user_command("LspRestartInfo", function()
+      local before = {}
+      for _, c in ipairs(vim.lsp.get_active_clients()) do
+        before[c.id] = c.name
+      end
+      vim.cmd("LspRestart")
+      vim.defer_fn(function()
+        local after_names = {}
+        local seen = {}
+        for _, c in ipairs(vim.lsp.get_active_clients()) do
+          if not seen[c.name] then
+            table.insert(after_names, c.name)
+            seen[c.name] = true
+          end
+        end
+        table.sort(after_names)
+        if #after_names == 0 then
+          vim.notify("LSP restart: no active clients", vim.log.levels.INFO)
+          return
+        end
+        vim.notify("LSP restarted: " .. table.concat(after_names, ", "), vim.log.levels.INFO)
+      end, 150)
+    end, { desc = "Restart LSP and show restarted clients" })
     local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
     local keymap = vim.keymap -- for conciseness
@@ -74,8 +99,8 @@ return {
         opts.desc = "Go to next diagnostic"
         keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 
-        opts.desc = "Restart LSP"
-        keymap.set("n", "<leader>r", ":LspRestart<CR>", opts)
+        opts.desc = "Restart LSP (info)"
+        keymap.set("n", "<leader>r", ":LspRestartInfo<CR>", opts)
       end,
     })
 
