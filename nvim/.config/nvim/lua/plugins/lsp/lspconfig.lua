@@ -13,30 +13,8 @@ return {
     -- import lspconfig plugin
     local lspconfig = require("lspconfig")
 
-    -- remove builtin copilot lspconfig (to avoid duplicate client with copilot.lua)
-    local ok_configs, configs = pcall(require, "lspconfig.configs")
-    if ok_configs and configs.copilot then
-      configs.copilot = nil
-    end
-
-    -- function: permanently disable lspconfig's builtin copilot definition.
-    -- Why: We use the external 'copilot.lua' plugin, so lspconfig's copilot server
-    -- would create a duplicate client (seen as extra 'copilot' entries in :LspInfo).
-    -- How: (1) remove initial config (above), (2) set up an autocmd to repeatedly
-    -- clear any re-added definition after lazy-loaded modules or updates.
-    vim.api.nvim_create_autocmd("VimEnter", {
-      once = true,
-      callback = function()
-        local ok2, cfgs = pcall(require, "lspconfig.configs")
-        if ok2 and cfgs.copilot then
-          cfgs.copilot = nil
-          vim.schedule(function()
-            vim.notify("Disabled builtin lspconfig copilot (using copilot.lua)", vim.log.levels.DEBUG)
-          end)
-        end
-      end,
-      desc = "Ensure builtin copilot LSP stays disabled",
-    })
+    -- (Reverted) previously removed builtin copilot definition to avoid duplicate client.
+    -- Keeping default lspconfig copilot plus copilot.lua as per user request.
 
     -- import mason_lspconfig plugin (mason already initialized in its own spec)
     local mason_ok, _ = pcall(require, "mason")
@@ -173,8 +151,7 @@ return {
     end
 
     mason_lspconfig.setup({
-      -- NOTE: After setup we patch terraformls filetypes again in case it was already configured earlier
-      -- (e.g. if another plugin called setup before this handler runs).
+      -- (Reverted) previously patched terraformls extra filetypes tf/tfvars.
       ensure_installed = ensure,
       handlers = {
         function(server_name)
@@ -183,9 +160,8 @@ return {
         terraformls = function()
           lspconfig.terraformls.setup({
             capabilities = capabilities,
-            filetypes = { "terraform", "terraform-vars", "tf", "tfvars" },
           })
-        end, -- added tf/tfvars explicitly (handler-time customization)
+        end,
         graphql = function()
           lspconfig.graphql.setup({
             capabilities = capabilities,
@@ -208,38 +184,6 @@ return {
         end,
       },
     })
-
-    -- Post-setup patch function for terraformls filetypes (idempotent)
-    -- Purpose: Ensure additional aliases (tf, tfvars) are recognized even if the server
-    -- was initialized before our mason handler (e.g. due to race). Adjusts the
-    -- underlying default_config.filetypes table uniquely and restarts client if needed.
-    local function patch_terraform_filetypes()
-      local ok_tf, tfconfig = pcall(require, 'lspconfig.server_configurations.terraformls')
-      if not ok_tf then return end
-      local ok_cfgs, cfgs = pcall(require, 'lspconfig.configs')
-      if not ok_cfgs then return end
-      local cfg = cfgs.terraformls
-      if not cfg or not cfg.document_config or not cfg.document_config.default_config then return end
-      local list = cfg.document_config.default_config.filetypes or { 'terraform', 'terraform-vars' }
-      local need = { tf = true, tfvars = true }
-      local changed = false
-      for ft,_ in pairs(need) do
-        local present = false
-        for _, existing in ipairs(list) do if existing == ft then present = true break end end
-        if not present then table.insert(list, ft) changed = true end
-      end
-      if changed then
-        cfg.document_config.default_config.filetypes = list
-        vim.notify('Patched terraformls filetypes: '..table.concat(list, ', '), vim.log.levels.DEBUG)
-        -- Optionally restart existing clients to pick up new filetypes
-        for _, client in ipairs(vim.lsp.get_active_clients()) do
-          if client.name == 'terraformls' then
-            client.stop(true)
-          end
-        end
-      end
-    end
-    patch_terraform_filetypes()
 
     return -- done
   end,
