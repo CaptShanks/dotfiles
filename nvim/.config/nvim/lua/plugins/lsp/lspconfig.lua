@@ -2,7 +2,7 @@ return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
-    { "williamboman/mason.nvim", config = function() require("mason").setup() end },
+    -- mason & mason-lspconfig now configured in separate early-loading mason.lua
     "williamboman/mason-lspconfig.nvim",
     "hrsh7th/cmp-nvim-lsp",
     { "antosha417/nvim-lsp-file-operations", config = true },
@@ -19,7 +19,11 @@ return {
       configs.copilot = nil
     end
 
-    -- import mason_lspconfig plugin
+    -- import mason_lspconfig plugin (mason already initialized in its own spec)
+    local mason_ok, _ = pcall(require, "mason")
+    if not mason_ok then
+      vim.notify("mason.nvim not loaded before lspconfig; check mason.lua spec", vim.log.levels.ERROR)
+    end
     local mason_lspconfig = require("mason-lspconfig")
 
     -- import cmp-nvim-lsp plugin
