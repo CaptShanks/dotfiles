@@ -133,6 +133,49 @@ return {
       end, 100)
     end, { desc = "Restart active LSP servers except Copilot" })
 
+    -- Guard against mason-lspconfig not loaded yet
+    if not mason_lspconfig.setup_handlers then
+      -- fallback to newer API style using setup({ handlers = ... }) if available
+      if mason_lspconfig.setup then
+        mason_lspconfig.setup({
+          handlers = {
+            function(server_name)
+              lspconfig[server_name].setup({ capabilities = capabilities })
+            end,
+            terraformls = function()
+              lspconfig["terraformls"].setup({
+                capabilities = capabilities,
+                filetypes = { "terraform", "terraform-vars", "tf", "tfvars" },
+              })
+            end,
+            graphql = function()
+              lspconfig["graphql"].setup({
+                capabilities = capabilities,
+                filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
+              })
+            end,
+            lua_ls = function()
+              lspconfig["lua_ls"].setup({
+                capabilities = capabilities,
+                settings = {
+                  Lua = {
+                    diagnostics = { globals = { "vim" } },
+                    completion = { callSnippet = "Replace" },
+                  },
+                },
+              })
+            end,
+            bashls = function()
+              lspconfig["bashls"].setup({ capabilities = capabilities })
+            end,
+          },
+        })
+      else
+        vim.notify("mason-lspconfig missing setup_handlers/setup; is plugin installed?", vim.log.levels.WARN)
+      end
+      return
+    end
+
     mason_lspconfig.setup_handlers({
       -- default handler for installed servers
       function(server_name)
