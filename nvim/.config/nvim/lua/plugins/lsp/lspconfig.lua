@@ -75,7 +75,7 @@ return {
         keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 
         opts.desc = "Restart LSP"
-        keymap.set("n", "<leader>r", ":LspRestartSafe<CR>", opts)
+        keymap.set("n", "<leader>r", ":LspRestart<CR>", opts)
       end,
     })
 
@@ -114,24 +114,6 @@ return {
       },
     })
 
-    -- Safe LSP restart command that skips non-standard virtual clients like copilot
-    vim.api.nvim_create_user_command("LspRestartSafe", function()
-      local clients = vim.lsp.get_active_clients()
-      for _, client in ipairs(clients) do
-        if client.name ~= "copilot" then
-          client.stop(true)
-        end
-      end
-      vim.defer_fn(function()
-        -- Reattach by triggering FileType which lspconfig uses via mason-lspconfig handlers
-        local bufs = vim.api.nvim_list_bufs()
-        for _, buf in ipairs(bufs) do
-          if vim.api.nvim_buf_is_loaded(buf) and vim.bo[buf].buftype == "" then
-            vim.api.nvim_exec_autocmds("FileType", { buffer = buf })
-          end
-        end
-      end, 100)
-    end, { desc = "Restart active LSP servers except Copilot" })
 
     -- Setup servers via mason-lspconfig (ensure mason already configured above)
     local ensure = { "bashls", "html", "cssls", "lua_ls", "graphql", "terraformls", "helm_ls", "gopls", "jedi_language_server" }
