@@ -203,17 +203,17 @@ vim.api.nvim_set_keymap(
 )
 
 -- neotree
--- keymap.set("n", "<leader>ee", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" }) -- REPLACED by snacks explorer
--- keymap.set("n", "<leader>et", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" }) -- REPLACED by snacks explorer
+-- keymap.set("n", "<leader>ee", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
+-- keymap.set("n", "<leader>et", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
 -- keymap.set("n", "fe", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" }) -- DEPRECATED (nvim-tree disabled)
 -- Remapped to Snacks explorer below
 keymap.set("n", "fe", function()
   local ok, ex = pcall(require, "snacks.explorer")
   if ok and ex.open then ex.open() else vim.notify("Snacks explorer not available", vim.log.levels.WARN) end
 end, { desc = "Explorer Focus (Snacks)" })
--- keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFile<CR>", { desc = "File explorer on current file" }) -- REPLACED by snacks explorer
--- keymap.set("n", "<leader>ec", "<cmd>NvimTreeClose<CR>", { desc = "Close file explorer" }) -- REPLACED by snacks explorer
--- keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" }) -- REPLACED by snacks explorer
+-- keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFile<CR>", { desc = "File explorer on current file" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
+-- keymap.set("n", "<leader>ec", "<cmd>NvimTreeClose<CR>", { desc = "Close file explorer" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
+-- keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
 
 -- ACTIONS
 -- clear search highlights
