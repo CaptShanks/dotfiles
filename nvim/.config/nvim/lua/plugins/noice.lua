@@ -1,7 +1,7 @@
 -- lazy.nvim
 return {
   "folke/noice.nvim",
-  enabled = false,
+  enabled = false, -- (Remains disabled; snacks notifier/hover/scroll active)
   event = "VeryLazy",
   opts = {
     -- add any options here
