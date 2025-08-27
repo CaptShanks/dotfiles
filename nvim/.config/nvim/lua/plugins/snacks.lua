@@ -22,7 +22,7 @@ return {
           [[ ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝ ]],
         },
         keys = {
-          { icon = ' ', key = 'e', desc = 'New File', action = ':enew<CR>' },
+          { icon = ' ', key = 'e', desc = 'New File', action = 'enew' },
           { icon = '󰱼 ', key = 'f', desc = 'Find File', action = function() require('snacks.picker').files() end },
           { icon = ' ', key = 'g', desc = 'Live Grep', action = function() require('snacks.picker').grep() end },
           { icon = ' ', key = 'E', desc = 'Explorer', action = function() require('snacks.explorer').open() end },
@@ -107,13 +107,13 @@ return {
 
       -- EXPLORER (replacing nvim-tree)
       { "<leader>et", function()
-          local EX = require("snacks.explorer")
+          local EX = require("snacks").explorer
           if EX.is_open and EX.is_open() then EX.close() else EX.open() end
         end, desc = "Explorer Toggle" },
-      { "<leader>ee", function() require("snacks.explorer").open() end, desc = "Explorer Open" },
-      { "<leader>ef", function() require("snacks.explorer").open({ reveal = true }) end, desc = "Explorer Reveal File" },
-      { "<leader>ec", function() local EX=require("snacks.explorer"); if EX.is_open and EX.is_open() then EX.close() end end, desc = "Explorer Close" },
-      { "<leader>er", function() require("snacks.explorer").refresh() end, desc = "Explorer Refresh" },
+      { "<leader>ee", function() require("snacks").explorer.open() end, desc = "Explorer Open" },
+      { "<leader>ef", function() require("snacks").explorer.open({ reveal = true }) end, desc = "Explorer Reveal File" },
+      { "<leader>ec", function() local EX=require("snacks").explorer; if EX.is_open and EX.is_open() then EX.close() end end, desc = "Explorer Close" },
+      { "<leader>er", function() local EX=require("snacks").explorer; if EX.refresh then EX.refresh() else local root = EX.root and (type(EX.root)=="function" and EX.root() or EX.root) or vim.loop.cwd(); if EX.is_open and EX.is_open() then EX.close() end; EX.open({ path = root }) end end, desc = "Explorer Refresh" },
 
       -- TERMINAL (minimal replacement of toggleterm)
       { "<C-t>", function() require("snacks.terminal").toggle() end, mode = {"n","t"}, desc = "Terminal Toggle" },
