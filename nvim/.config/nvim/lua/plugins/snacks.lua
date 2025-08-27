@@ -87,6 +87,14 @@ return {
     }
   end,
   config = function(_, opts)
-    require("snacks").setup(opts)
+    local Snacks = require("snacks")
+    Snacks.setup(opts)
+    -- Ensure Snacks picker/input become the default vim.ui handlers (so health check passes)
+    if Snacks.picker and vim.ui.select ~= Snacks.picker.select then
+      vim.ui.select = Snacks.picker.select
+    end
+    if Snacks.input and vim.ui.input ~= Snacks.input.input then
+      vim.ui.input = Snacks.input.input
+    end
   end,
 }
