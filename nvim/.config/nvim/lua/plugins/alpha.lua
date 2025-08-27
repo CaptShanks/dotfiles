@@ -1,11 +1,12 @@
 return {
   "goolord/alpha-nvim",
+  enabled = false, -- disabled in favor of Snacks dashboard
   event = "VimEnter",
   config = function()
     local alpha = require("alpha")
     local dashboard = require("alpha.themes.dashboard")
 
-    -- Set header
+    -- Set header (original) 
     dashboard.section.header.val = {
      [[=================     ===============     ===============   ========  ========]],
      [[\\ . . . . . . .\\   //. . . . . . .\\   //. . . . . . .\\  \\. . .\\// . . //]],
@@ -32,7 +33,7 @@ return {
     dashboard.section.buttons.val = {
       dashboard.button("e", "  > New File", "<cmd>ene<CR>"),
       -- dashboard.button("SPC ee", "  > Toggle file explorer", "<cmd>NvimTreeToggle<CR>"), -- Replaced by snacks explorer
-      dashboard.button("SPC ee", "  > Toggle file explorer", function() require('snacks.explorer').toggle() end),
+      dashboard.button("SPC ee", "  > Toggle file explorer", "<cmd>NvimTreeToggle<CR>"),
       -- dashboard.button("SPC ff", "󰱼 > Find File", "<cmd>Telescope find_files<CR>"), -- Replaced by snacks picker
       dashboard.button("SPC ff", "󰱼 > Find File", function() require('snacks.picker').files() end),
       -- dashboard.button("SPC fs", "  > Find Word", "<cmd>Telescope live_grep<CR>"), -- Replaced by snacks picker

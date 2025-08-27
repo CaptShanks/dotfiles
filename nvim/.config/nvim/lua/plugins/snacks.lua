@@ -10,6 +10,44 @@ return {
   priority = 1000,
   ---@type snacks.Config
   opts = {
+    dashboard = {
+      enabled = true,
+      preset = {
+        header = {
+          '=================     ===============     ===============   ========  ========',
+          '\\ . . . . . . .\\   //. . . . . . .\\   //. . . . . . .\\  \\. . .\\// . . //',
+          '||. . ._____. . .|| ||. . ._____. . .|| ||. . ._____. . .|| || . . .\\/ . . .||',
+          '|| . .||   ||. . || || . .||   ||. . || || . .||   ||. . || ||. . . . . . . ||',
+          '||. . ||   || . .|| ||. . ||   || . .|| ||. . ||   || . .|| || . | . . . . .||',
+          '|| . .||   ||. _-|| ||-_ .||   ||. . || || . .||   ||. _-|| ||-_.|\\ . . . . ||',
+          '||. . ||   ||-\'  || ||  `-||   || . .|| ||. . ||   ||-\'  || ||  `|\\_ . .|. .||',
+          '|| . _||   ||    || ||    ||   ||_ . || || . _||   ||    || ||   |\\ `-_/| . ||',
+          '||_-\' ||  .|/    || ||    \|.  || `-_|| ||_-\' ||  .|/    || ||   | \\  / |-_.||',
+          '||    ||_-\'      || ||      `-_||    || ||    ||_-\'      || ||   | \\  / |  `||',
+          '||    `\'         || ||         `\'    || ||    `\'         || ||   | \\  / |   ||',
+          '||            .===\' `===.         .===\'.`===.         .===\' /==. |  \\/  |   ||',
+          '||         .==\'   \_|-_ `===. .===\'   _|_   `===. .===\' _-|/   `==  \\/  |   ||',
+          '||      .==\'    _-'    `-_  `=\'    _-'   `-_    `=\'  _-'   `-_  /|  \\/  |   ||',
+          '||   .==\'    _-'          '-__\._-'         '-_./__-'         `\' |. /|  |   ||',
+          '||.==\'    _-'                                                     `\' |  /==.||',
+          '==\'    _-'                        N E O V I M                         \\/   `==',
+          '\\   _-'                                                                `-_   /',
+          ' `\'\'                                                                      ``' ,
+        },
+        keys = {
+          { icon = ' ', key = 'e', desc = 'New File', action = ':enew<CR>' },
+          { icon = '󰱼 ', key = 'f', desc = 'Find File', action = function() require('snacks.picker').files() end },
+          { icon = ' ', key = 'g', desc = 'Live Grep', action = function() require('snacks.picker').grep() end },
+          { icon = ' ', key = 'E', desc = 'Explorer', action = function() require('snacks.explorer').open() end },
+          { icon = '󰁯 ', key = 's', desc = 'Sessions', action = ':SessionSearch<CR>' },
+          { icon = ' ', key = 'q', desc = 'Quit', action = ':qa<CR>' },
+        },
+        footer = function()
+          local stats = require('lazy').stats()
+          return { ('Loaded %d/%d plugins'):format(stats.loaded, stats.count) }
+        end,
+      },
+    },
     bigfile = { enabled = true },
     notifier = { enabled = true },
     statuscolumn = { enabled = true },
