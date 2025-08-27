@@ -114,11 +114,14 @@ return {
       { "<leader>D", function() P.diagnostics({ buffer = 0 }) end, desc = "Buffer Diagnostics" },
 
       -- EXPLORER (replacing nvim-tree)
-      { "<leader>et", function() E.toggle() end, desc = "Explorer Toggle" },
-      { "<leader>ee", function() E.focus() end, desc = "Explorer Focus" },
-      { "<leader>ef", function() E.focus({ reveal = true }) end, desc = "Explorer Reveal File" },
-      { "<leader>ec", function() E.close() end, desc = "Explorer Close" },
-      { "<leader>er", function() E.refresh() end, desc = "Explorer Refresh" },
+      { "<leader>et", function()
+          local EX = require("snacks.explorer")
+          if EX.is_open and EX.is_open() then EX.close() else EX.open() end
+        end, desc = "Explorer Toggle" },
+      { "<leader>ee", function() require("snacks.explorer").open() end, desc = "Explorer Open" },
+      { "<leader>ef", function() require("snacks.explorer").open({ reveal = true }) end, desc = "Explorer Reveal File" },
+      { "<leader>ec", function() local EX=require("snacks.explorer"); if EX.is_open and EX.is_open() then EX.close() end end, desc = "Explorer Close" },
+      { "<leader>er", function() require("snacks.explorer").refresh() end, desc = "Explorer Refresh" },
 
       -- TERMINAL (minimal replacement of toggleterm)
       { "<C-t>", function() require("snacks.terminal").toggle() end, mode = {"n","t"}, desc = "Terminal Toggle" },
