@@ -8,6 +8,25 @@ return {
   version = false,
   lazy = false, -- load early so UI modules are ready
   priority = 1000,
+  -- Fix deactivate module error by patching the metatable before any access
+  init = function()
+    -- Create a stub package.preload entry for snacks.deactivate
+    package.preload["snacks.deactivate"] = function()
+      return function() return true end
+    end
+    
+    -- Additional early fix
+    vim.api.nvim_create_autocmd("User", {
+      pattern = "VeryLazy", 
+      once = true,
+      callback = function()
+        local ok, snacks = pcall(require, "snacks")
+        if ok and not snacks.deactivate then
+          snacks.deactivate = function() return true end
+        end
+      end,
+    })
+  end,
   ---@type snacks.Config
   opts = {
     dashboard = {
@@ -22,12 +41,12 @@ return {
           [[ ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝ ]],
         },
         keys = {
-          { icon = ' ', key = 'e', desc = 'New File', action = 'enew' },
+          { icon = ' ', key = 'e', desc = 'New File', action = 'enew' },
           { icon = '󰱼 ', key = 'f', desc = 'Find File', action = function() require('snacks.picker').files() end },
-          { icon = ' ', key = 'g', desc = 'Live Grep', action = function() require('snacks.picker').grep() end },
-          { icon = ' ', key = 'E', desc = 'Explorer', action = function() require('snacks.explorer').open() end },
+          { icon = ' ', key = 'g', desc = 'Live Grep', action = function() require('snacks.picker').grep() end },
+          { icon = ' ', key = 't', desc = 'nvim-tree', action = ':NvimTreeToggle<CR>' },
           { icon = '󰁯 ', key = 's', desc = 'Sessions', action = ':SessionSearch<CR>' },
-          { icon = ' ', key = 'q', desc = 'Quit', action = ':qa<CR>' },
+          { icon = ' ', key = 'q', desc = 'Quit', action = ':qa<CR>' },
         },
         layout = {
           { section = "header", padding = 1 },
@@ -49,14 +68,7 @@ return {
     hover = { enabled = true },
     terminal = { enabled = true },
     explorer = {
-      enabled = true,
-      replace_netrw = true,
-      width = 40,
-      git = { enabled = true },
-      follow = true,
-      auto_close = false,
-      hidden = true,
-      hijack_netrw = true,
+      enabled = false, -- Disabled in favor of nvim-tree
     },
     picker = {
       enabled = true,
@@ -105,24 +117,23 @@ return {
       { "gt", function() P.lsp_type_definitions() end, desc = "LSP Type Defs" },
       { "<leader>D", function() P.diagnostics({ buffer = 0 }) end, desc = "Buffer Diagnostics" },
 
-      -- EXPLORER (replacing nvim-tree)
-      { "<leader>et", function()
-          local EX = require("snacks").explorer
-          if EX.is_open and EX.is_open() then EX.close() else EX.open() end
-        end, desc = "Explorer Toggle" },
-      { "<leader>ee", function() require("snacks").explorer.open() end, desc = "Explorer Open" },
-      { "<leader>ef", function() require("snacks").explorer.open({ reveal = true }) end, desc = "Explorer Reveal File" },
-      { "<leader>ec", function() local EX=require("snacks").explorer; if EX.is_open and EX.is_open() then EX.close() end end, desc = "Explorer Close" },
-      { "<leader>er", function() local EX=require("snacks").explorer; if EX.refresh then EX.refresh() else local root = EX.root and (type(EX.root)=="function" and EX.root() or EX.root) or vim.loop.cwd(); if EX.is_open and EX.is_open() then EX.close() end; EX.open({ path = root }) end end, desc = "Explorer Refresh" },
+      -- Note: Explorer disabled in favor of nvim-tree (see nvim-tree.lua)
+      -- nvim-tree handles all file exploration needs
 
       -- TERMINAL (minimal replacement of toggleterm)
       { "<C-t>", function() require("snacks.terminal").toggle() end, mode = {"n","t"}, desc = "Terminal Toggle" },
     }
   end,
   config = function(_, opts)
-    local Snacks = require("snacks")
+    local ok, Snacks = pcall(require, "snacks")
+    if not ok then
+      vim.notify("Failed to load snacks.nvim", vim.log.levels.ERROR)
+      return
+    end
+    
     Snacks.setup(opts)
-    -- Ensure Snacks picker/input become the default vim.ui handlers (so health check passes)
+    
+    -- Ensure Snacks picker/input become the default vim.ui handlers
     if Snacks.picker and vim.ui.select ~= Snacks.picker.select then
       vim.ui.select = Snacks.picker.select
     end

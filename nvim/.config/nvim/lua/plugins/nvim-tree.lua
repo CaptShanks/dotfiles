@@ -1,6 +1,6 @@
 return {
   "nvim-tree/nvim-tree.lua",
-  enabled = false,
+  enabled = true, -- Re-enabled to work alongside Snacks
   dependencies = { { "hnvim-tree/nvim-web-devicons" } },
   config = function()
     local nvimtree = require("nvim-tree")

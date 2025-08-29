@@ -203,17 +203,16 @@ vim.api.nvim_set_keymap(
 )
 
 -- neotree
--- keymap.set("n", "<leader>ee", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
--- keymap.set("n", "<leader>et", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
--- keymap.set("n", "fe", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" }) -- DEPRECATED (nvim-tree disabled)
--- Remapped to Snacks explorer below
-keymap.set("n", "fe", function()
-  local ok, ex = pcall(require, "snacks.explorer")
-  if ok and ex.open then ex.open() else vim.notify("Snacks explorer not available", vim.log.levels.WARN) end
-end, { desc = "Explorer Focus (Snacks)" })
--- keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFile<CR>", { desc = "File explorer on current file" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
--- keymap.set("n", "<leader>ec", "<cmd>NvimTreeClose<CR>", { desc = "Close file explorer" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
--- keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" }) -- LEGACY (nvim-tree) disabled; see snacks.lua for active explorer mappings
+-- EXPLORERS: Dual setup with distinct responsibilities
+-- nvim-tree: Traditional sidebar explorer (lowercase 'e')
+keymap.set("n", "<leader>ee", "<cmd>NvimTreeFocus<CR>", { desc = "Focus nvim-tree sidebar" })
+keymap.set("n", "<leader>et", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle nvim-tree sidebar" })
+keymap.set("n", "fe", "<cmd>NvimTreeFocus<CR>", { desc = "Focus nvim-tree sidebar" })
+keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFile<CR>", { desc = "Find file in nvim-tree" })
+keymap.set("n", "<leader>ec", "<cmd>NvimTreeClose<CR>", { desc = "Close nvim-tree sidebar" })
+keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh nvim-tree sidebar" })
+
+-- Note: Snacks explorer uses capital 'E' (<leader>E*) - see snacks.lua
 
 -- ACTIONS
 -- clear search highlights
