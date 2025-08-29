@@ -12,17 +12,21 @@ return {
   init = function()
     -- Create a stub package.preload entry for snacks.deactivate
     package.preload["snacks.deactivate"] = function()
-      return function() return true end
+      return function()
+        return true
+      end
     end
-    
+
     -- Additional early fix
     vim.api.nvim_create_autocmd("User", {
-      pattern = "VeryLazy", 
+      pattern = "VeryLazy",
       once = true,
       callback = function()
         local ok, snacks = pcall(require, "snacks")
         if ok and not snacks.deactivate then
-          snacks.deactivate = function() return true end
+          snacks.deactivate = function()
+            return true
+          end
         end
       end,
     })
@@ -41,12 +45,26 @@ return {
           [[ ╚═╝  ╚═══╝╚══════╝ ╚═════╝   ╚═══╝  ╚═╝╚═╝     ╚═╝ ]],
         },
         keys = {
-          { icon = ' ', key = 'e', desc = 'New File', action = 'enew' },
-          { icon = '󰱼 ', key = 'f', desc = 'Find File', action = function() require('snacks.picker').files() end },
-          { icon = ' ', key = 'g', desc = 'Live Grep', action = function() require('snacks.picker').grep() end },
-          { icon = ' ', key = 't', desc = 'nvim-tree', action = ':NvimTreeToggle<CR>' },
-          { icon = '󰁯 ', key = 's', desc = 'Sessions', action = ':SessionSearch<CR>' },
-          { icon = ' ', key = 'q', desc = 'Quit', action = ':qa<CR>' },
+          { icon = " ", key = "e", desc = "New File", action = "enew" },
+          {
+            icon = "󰱼 ",
+            key = "f",
+            desc = "Find File",
+            action = function()
+              require("snacks.picker").files()
+            end,
+          },
+          {
+            icon = " ",
+            key = "g",
+            desc = "Live Grep",
+            action = function()
+              require("snacks.picker").grep()
+            end,
+          },
+          { icon = " ", key = "t", desc = "nvim-tree", action = ":NvimTreeToggle<CR>" },
+          { icon = "󰁯 ", key = "s", desc = "Sessions", action = ":SessionSearch<CR>" },
+          { icon = " ", key = "q", desc = "Quit", action = ":qa<CR>" },
         },
         layout = {
           { section = "header", padding = 1 },
@@ -54,8 +72,8 @@ return {
           { section = "footer", padding = 1 },
         },
         footer = function()
-          local stats = require('lazy').stats()
-          return { ('Loaded %d/%d plugins'):format(stats.loaded, stats.count) }
+          local stats = require("lazy").stats()
+          return { ("Loaded %d/%d plugins"):format(stats.loaded, stats.count) }
         end,
       },
     },
@@ -72,11 +90,186 @@ return {
     },
     picker = {
       enabled = true,
-      sources = {
-        files = { hidden = true, follow = true },
-        grep = { hidden = true, follow = true, regex = false },
+      prompt = " ",
+      focus = "input",
+      ui_select = true,
+      auto_close = true,
+      
+      -- Layout configuration with dynamic preset selection
+      layout = {
+        cycle = true,
+        preset = function()
+          return vim.o.columns >= 120 and "default" or "vertical"
+        end,
       },
-      layout = { preset = "default" },
+      
+      -- Enhanced matcher configuration
+      matcher = {
+        fuzzy = true,
+        smartcase = true,
+        ignorecase = true,
+        sort_empty = false,
+        filename_bonus = true,
+        file_pos = true,
+        cwd_bonus = true,
+        frecency = true,
+        history_bonus = false,
+      },
+      
+      -- Sort configuration
+      sort = {
+        fields = { "score:desc", "#text", "idx" },
+      },
+      
+      -- Formatter configurations
+      formatters = {
+        file = {
+          filename_first = true,
+          truncate = false,
+          filename_only = false,
+          icon_width = 2,
+          git_status_hl = true,
+        },
+        text = {
+          ft = nil,
+        },
+        selected = {
+          show_always = false,
+          unselected = true,
+        },
+      },
+      
+      -- Source-specific configurations
+      sources = {
+        files = {
+          hidden = false,
+          ignored = false,
+          follow = false,
+        },
+        grep = {
+          hidden = false,
+          ignored = false,
+          regex = true,
+          live = true,
+          need_search = true,
+        },
+        buffers = {
+          sort_lastused = true,
+          current = true,
+          hidden = false,
+          unloaded = true,
+          nofile = false,
+          modified = false,
+        },
+        recent = {
+          filter = { cwd = false },
+        },
+      },
+      
+      -- Toggles configuration
+      toggles = {
+        follow = "f",
+        hidden = "h",
+        ignored = "i",
+        modified = "m",
+        regex = { icon = "R", value = false },
+      },
+      
+      -- Icons configuration
+      icons = {
+        files = {
+          enabled = true,
+          dir = "󰉋 ",
+          dir_open = "󰝰 ",
+          file = "󰈔 ",
+        },
+        git = {
+          enabled = true,
+          staged = "●",
+          added = "",
+          deleted = "",
+          modified = "○",
+          untracked = "?",
+        },
+      },
+      
+      -- Enhanced window keybindings
+      win = {
+        input = {
+          keys = {
+            -- Enhanced navigation
+            ["<C-j>"] = { "list_down", mode = { "i", "n" } },
+            ["<C-k>"] = { "list_up", mode = { "i", "n" } },
+            ["<Down>"] = { "list_down", mode = { "i", "n" } },
+            ["<Up>"] = { "list_up", mode = { "i", "n" } },
+            
+            -- Actions
+            ["<CR>"] = { "confirm", mode = { "n", "i" } },
+            ["<Esc>"] = "cancel",
+            ["<C-c>"] = { "cancel", mode = "i" },
+            ["<Tab>"] = { "select_and_next", mode = { "i", "n" } },
+            ["<S-Tab>"] = { "select_and_prev", mode = { "i", "n" } },
+            
+            -- Split/tab actions
+            ["<C-v>"] = { "edit_vsplit", mode = { "i", "n" } },
+            ["<C-s>"] = { "edit_split", mode = { "i", "n" } },
+            ["<C-t>"] = { "tab", mode = { "n", "i" } },
+            
+            -- Toggles
+            ["<A-p>"] = { "toggle_preview", mode = { "i", "n" } },
+            ["<A-h>"] = { "toggle_hidden", mode = { "i", "n" } },
+            ["<A-i>"] = { "toggle_ignored", mode = { "i", "n" } },
+            ["<A-f>"] = { "toggle_follow", mode = { "i", "n" } },
+            ["<C-g>"] = { "toggle_live", mode = { "i", "n" } },
+            
+            -- History navigation
+            ["<C-Up>"] = { "history_back", mode = { "i", "n" } },
+            ["<C-Down>"] = { "history_forward", mode = { "i", "n" } },
+            
+            -- Insert helpers
+            ["<C-r><C-w>"] = { "insert_cword", mode = "i" },
+            ["<C-r><C-f>"] = { "insert_file", mode = "i" },
+            ["<C-r>%"] = { "insert_filename", mode = "i" },
+            
+            -- Selection and other
+            ["<C-a>"] = { "select_all", mode = { "n", "i" } },
+            ["<C-q>"] = { "qflist", mode = { "i", "n" } },
+            ["?"] = "toggle_help_input",
+            ["/"] = "toggle_focus",
+          },
+        },
+        list = {
+          keys = {
+            -- Enhanced list navigation
+            ["j"] = "list_down",
+            ["k"] = "list_up",
+            ["G"] = "list_bottom",
+            ["gg"] = "list_top",
+            ["<C-d>"] = "list_scroll_down",
+            ["<C-u>"] = "list_scroll_up",
+            
+            -- Actions
+            ["<CR>"] = "confirm",
+            ["<2-LeftMouse>"] = "confirm",
+            ["<Esc>"] = "cancel",
+            ["q"] = "close",
+            
+            -- Selection
+            ["<Tab>"] = { "select_and_next", mode = { "n", "x" } },
+            ["<S-Tab>"] = { "select_and_prev", mode = { "n", "x" } },
+            ["<C-a>"] = "select_all",
+            
+            -- Preview scrolling
+            ["<C-f>"] = "preview_scroll_down",
+            ["<C-b>"] = "preview_scroll_up",
+            
+            -- Focus and help
+            ["i"] = "focus_input",
+            ["/"] = "toggle_focus",
+            ["?"] = "toggle_help_list",
+          },
+        },
+      },
     },
   },
   keys = function()
@@ -85,43 +278,287 @@ return {
 
     local function curdir()
       local name = vim.api.nvim_buf_get_name(0)
-      if name == "" then return vim.loop.cwd() end
+      if name == "" then
+        return vim.loop.cwd()
+      end
       return vim.fn.fnamemodify(name, ":p:h")
     end
 
     return {
+      -- SMART PICKER
+      {
+        "<leader><space>",
+        function()
+          P.smart()
+        end,
+        desc = "Smart Find",
+      },
       -- FILES
-      { "<leader> ", function() P.files({ cwd = vim.loop.cwd() }) end, desc = "Files (CWD)" },
-      { "<leader>ff", function() P.files({ cwd = curdir() }) end, desc = "Files (Buffer Dir)" },
-      { "<leader>fF", function() P.resume({ picker = "files", cwd = curdir() }) end, desc = "[Resume] Files (Buf Dir)" },
-      { "<leader>fr", function() P.recent({ filter = { cwd = true } }) end, desc = "Recent (CWD)" },
-      { "<leader>fR", function() P.recent() end, desc = "Recent (All)" },
-      { "<leader>fb", function() P.buffers() end, desc = "Buffers" },
+      {
+        "<leader>ff",
+        function()
+          P.files({ cwd = vim.loop.cwd() })
+        end,
+        desc = "Files (CWD)",
+      },
+      {
+        "<leader>fd",
+        function()
+          P.files({ cwd = curdir() })
+        end,
+        desc = "Files (Buffer Dir)",
+      },
+      {
+        "<leader>fF",
+        function()
+          P.resume({ picker = "files", cwd = curdir() })
+        end,
+        desc = "[Resume] Files (Buf Dir)",
+      },
+      {
+        "<leader>fG",
+        function()
+          P.git_files()
+        end,
+        desc = "Git Files",
+      },
+      {
+        "<leader>fr",
+        function()
+          P.recent({ filter = { cwd = true } })
+        end,
+        desc = "Recent (CWD)",
+      },
+      {
+        "<leader>fR",
+        function()
+          P.recent()
+        end,
+        desc = "Recent (All)",
+      },
+      {
+        "<leader>fb",
+        function()
+          P.buffers()
+        end,
+        desc = "Buffers",
+      },
+      {
+        "<leader>,",
+        function()
+          P.buffers()
+        end,
+        desc = "Buffers (Alt)",
+      },
       { "<leader>fN", "<cmd>enew<CR>", desc = "New Buffer" },
       { "<leader>fx", "<cmd>BufferDelete<CR>", desc = "Close Buffer" },
 
-      -- GREP
-      { "<leader>fs", function() P.grep() end, desc = "Live Grep" },
-      { "<leader>fd", function() P.grep({ cwd = curdir() }) end, desc = "Live Grep (Buf Dir)" },
-      { "<leader>fD", function() P.resume({ picker = "grep" }) end, desc = "[Resume] Grep" },
-      { "<leader>fc", function() P.grep_word() end, desc = "Grep Word" },
-      { "<leader>fl", function() P.lines() end, desc = "Search Buffer Lines" },
+      -- GREP / SEARCH
+      {
+        "<leader>/",
+        function()
+          P.grep()
+        end,
+        desc = "Grep (Root)",
+      },
+      {
+        "<leader>fs",
+        function()
+          P.grep()
+        end,
+        desc = "Grep (Root)",
+      },
+      {
+        "<leader>fg",
+        function()
+          P.grep({ cwd = curdir() })
+        end,
+        desc = "Grep (Buffer Dir)",
+      },
+      {
+        "<leader>fD",
+        function()
+          P.resume({ picker = "grep" })
+        end,
+        desc = "[Resume] Grep",
+      },
+      {
+        "<leader>fw",
+        function()
+          P.grep_word()
+        end,
+        desc = "Grep Word (Root)",
+      },
+      {
+        "<leader>fW",
+        function()
+          P.grep_word({ cwd = curdir() })
+        end,
+        desc = "Grep Word (Buffer Dir)",
+      },
+      {
+        "<leader>fl",
+        function()
+          P.lines()
+        end,
+        desc = "Buffer Lines",
+      },
+
+      -- GIT PICKERS  
+      {
+        "<leader>gs",
+        function()
+          P.git_status()
+        end,
+        desc = "Git Status",
+      },
+      {
+        "<leader>gc",
+        function()
+          P.git_log()
+        end,
+        desc = "Git Commits",
+      },
+      {
+        "<leader>gb",
+        function()
+          P.git_log_buffer()
+        end,
+        desc = "Git Buffer Commits",
+      },
 
       -- COMMANDS / HISTORY
-      { "q:", function() P.command_history() end, mode = {"n","v"}, desc = "Command History" },
-      { "<leader>:", function() P.commands() end, mode = {"n","v"}, desc = "Commands" },
+      {
+        "q:",
+        function()
+          P.command_history()
+        end,
+        mode = { "n", "v" },
+        desc = "Command History",
+      },
+      {
+        "<leader>:",
+        function()
+          P.commands()
+        end,
+        mode = { "n", "v" },
+        desc = "Commands",
+      },
 
-      -- LSP pickers (global fallbacks if buffer not yet attached)
-      { "gr", function() P.lsp_references() end, desc = "LSP References" },
-      { "gi", function() P.lsp_implementations() end, desc = "LSP Implementations" },
-      { "gt", function() P.lsp_type_definitions() end, desc = "LSP Type Defs" },
-      { "<leader>D", function() P.diagnostics({ buffer = 0 }) end, desc = "Buffer Diagnostics" },
+      -- LSP PICKERS (enhanced with buffer context)
+      {
+        "gd",
+        function()
+          P.lsp_definitions()
+        end,
+        desc = "LSP Definitions",
+      },
+      {
+        "gr",
+        function()
+          P.lsp_references()
+        end,
+        desc = "LSP References",
+      },
+      {
+        "gi",
+        function()
+          P.lsp_implementations()
+        end,
+        desc = "LSP Implementations",
+      },
+      {
+        "gt",
+        function()
+          P.lsp_type_definitions()
+        end,
+        desc = "LSP Type Defs",
+      },
+      {
+        "<leader>fs",
+        function()
+          P.lsp_symbols()
+        end,
+        desc = "LSP Symbols",
+      },
+      {
+        "<leader>fS",
+        function()
+          P.lsp_workspace_symbols()
+        end,
+        desc = "LSP Workspace Symbols",
+      },
+      {
+        "<leader>gd",
+        function()
+          P.diagnostics({ buffer = 0 })
+        end,
+        desc = "Buffer Diagnostics",
+      },
+      {
+        "<leader>gD",
+        function()
+          P.diagnostics()
+        end,
+        desc = "Workspace Diagnostics",
+      },
+
+      -- MISC PICKERS
+      {
+        "<leader>fh",
+        function()
+          P.help()
+        end,
+        desc = "Help Tags",
+      },
+      {
+        "<leader>fk",
+        function()
+          P.keymaps()
+        end,
+        desc = "Keymaps",
+      },
+      {
+        "<leader>fo",
+        function()
+          P.vim_options()
+        end,
+        desc = "Vim Options",
+      },
+      {
+        "<leader>fH",
+        function()
+          P.highlights()
+        end,
+        desc = "Highlights",
+      },
+      {
+        "<leader>fj",
+        function()
+          P.jumps()
+        end,
+        desc = "Jump List",
+      },
+      {
+        "<leader>fm",
+        function()
+          P.marks()
+        end,
+        desc = "Marks",
+      },
 
       -- Note: Explorer disabled in favor of nvim-tree (see nvim-tree.lua)
       -- nvim-tree handles all file exploration needs
 
       -- TERMINAL (minimal replacement of toggleterm)
-      { "<C-t>", function() require("snacks.terminal").toggle() end, mode = {"n","t"}, desc = "Terminal Toggle" },
+      {
+        "<C-t>",
+        function()
+          require("snacks.terminal").toggle()
+        end,
+        mode = { "n", "t" },
+        desc = "Terminal Toggle",
+      },
     }
   end,
   config = function(_, opts)
@@ -130,9 +567,9 @@ return {
       vim.notify("Failed to load snacks.nvim", vim.log.levels.ERROR)
       return
     end
-    
+
     Snacks.setup(opts)
-    
+
     -- Ensure Snacks picker/input become the default vim.ui handlers
     if Snacks.picker and vim.ui.select ~= Snacks.picker.select then
       vim.ui.select = Snacks.picker.select
