@@ -124,7 +124,7 @@ return {
       -- Formatter configurations
       formatters = {
         file = {
-          filename_first = true,
+          filename_first = false,
           truncate = false,
           filename_only = false,
           icon_width = 2,
@@ -289,7 +289,15 @@ return {
       {
         "<leader><space>",
         function()
-          P.smart()
+          P.smart({
+            formatters = {
+              file = {
+                filename_first = false,
+                truncate = false,
+                filename_only = false,
+              }
+            }
+          })
         end,
         desc = "Smart Find",
       },
@@ -297,7 +305,16 @@ return {
       {
         "<leader>ff",
         function()
-          P.files({ cwd = vim.loop.cwd() })
+          P.files({ 
+            cwd = vim.loop.cwd(),
+            formatters = {
+              file = {
+                filename_first = false,
+                truncate = false,
+                filename_only = false,
+              }
+            }
+          })
         end,
         desc = "Files (CWD)",
       },
