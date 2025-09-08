@@ -21,8 +21,8 @@ keymap.set("n", "x", '"_x')
 keymap.set({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
 -- bind fd to quit one
 keymap.set("n", "fd", "<cmd>q<cr>", { desc = "Quit" })
--- bind fg to delete buffer
-keymap.set("n", "fg", "<cmd>bp <bar> bd #<CR>", { desc = "Close buffer" })
+-- bind fx to delete buffer (changed from fg to avoid G conflicts)
+keymap.set("n", "fx", "<cmd>bp <bar> bd #<CR>", { desc = "Close buffer" })
 
 -- Lazy hotkey
 keymap.set("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy" })
