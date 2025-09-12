@@ -1,4 +1,7 @@
+-- DEPRECATED: Replaced with native LSP configuration
+-- See native-lsp.lua for the new implementation
 return {
+  enabled = false, -- Disabled in favor of native LSP
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
