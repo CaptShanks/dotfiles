@@ -21,8 +21,10 @@ k9s:
     image: tyagsha/toolbox:0.1.0
     namespace: default
     limits:
-      cpu: 100m
-      memory: 100Mi
+      cpu: 50m
+      memory: 50Mi
+    tty: true
+    command: ["/bin/bash"]
   imageScans:
     enable: false
     exclusions:

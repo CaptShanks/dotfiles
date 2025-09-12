@@ -293,6 +293,7 @@ export PATH="/usr/local/bin:$PATH"
 . "/Users/sjc-lp03742/.deno/env"
 
 export K9S_CONFIG_DIR="$HOME/.config/k9s"
+export K9S_FEATURE_GATE_NODE_SHELL=true
 export AWS_SDK_LOAD_CONFIG=1
 export TF_FORCE_LOCAL_BACKEND=1
 
@@ -310,3 +311,7 @@ else
 fi
 unset __conda_setup
 # <<< conda initialize <<<
+
+. "$HOME/.atuin/bin/env"
+
+eval "$(atuin init zsh)"
