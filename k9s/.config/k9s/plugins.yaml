@@ -2,6 +2,27 @@
 # requires eks-node-viewer installed on system
 # https://github.com/awslabs/eks-node-viewer/
 plugins:
+  #--- Node shell access
+  node-shell:
+    shortCut: Shift-S
+    description: Node shell
+    dangerous: true
+    scopes:
+      - node
+    command: kubectl
+    background: false
+    confirm: true
+    args:
+      - debug
+      - --context
+      - $CONTEXT
+      - node/$NAME
+      - -it
+      - --image=busybox:1.35
+      - --
+      - chroot
+      - /host
+      - sh
   #--- Create debug container for selected pod in current namespace
   # See https://kubernetes.io/docs/tasks/debug/debug-application/debug-running-pod/#ephemeral-container
   debug:
