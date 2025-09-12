@@ -400,11 +400,73 @@ vim.api.nvim_create_user_command("TmuxOpenOpencodePane", function(arg)
   end
 end, { nargs = 1, desc = "Open/focus opencode in tmux split (vc|hc|vb|hb)" })
 
--- <leader>ot to open/focus opencode in vertical split using buffer dir
-keymap.set({ "n", "v" }, "<leader>ot", ":TmuxOpenOpencodePane hb<CR>", {
+-- Enhanced opencode command that uses git root context when available
+vim.api.nvim_create_user_command("TmuxOpenOpencodeContext", function()
+  -- Fallback to embedded if not in tmux
+  if not vim.env.TMUX then
+    local ok, mod = pcall(require, "opencode")
+    if ok then
+      mod.toggle()
+    else
+      print("opencode not available")
+    end
+    return
+  end
+  
+  -- Determine the best context directory (prioritize git root, fallback to cwd)
+  local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+  local context_dir = vim.fn.getcwd() -- default to current working directory
+  
+  if git_root and git_root ~= "" and vim.v.shell_error == 0 then
+    context_dir = git_root
+  end
+  
+  if context_dir == "" then
+    print("No valid context directory found")
+    return
+  end
+  
+  -- Look for existing opencode pane and check if it needs context update
+  local list = vim.fn.systemlist("tmux list-panes -F '#{pane_id} #{pane_current_command} #{pane_current_path}'")
+  if vim.v.shell_error == 0 then
+    for _, line in ipairs(list) do
+      local id, cmd, path = line:match("^(%%[%w%-_]+)%s+(%S+)%s+(.+)")
+      if cmd == "opencode" then
+        -- If opencode pane exists but in wrong directory, kill and recreate
+        if path ~= context_dir then
+          os.execute(string.format("tmux kill-pane -t %s", id))
+          print("Killed existing opencode pane (wrong context)")
+          break
+        else
+          -- Focus existing pane with correct context
+          os.execute(string.format("tmux select-pane -t %s", id))
+          print("Focused existing opencode pane with correct context: " .. context_dir)
+          return
+        end
+      end
+    end
+  end
+  
+  -- Create new opencode pane with correct context
+  local tmuxCommand = string.format("tmux split-window -h -c '%s' 'opencode'", context_dir)
+  local ok = os.execute(tmuxCommand)
+  if ok then
+    os.execute("tmux select-pane -T opencode")
+    print("Opened opencode in tmux pane with context: " .. context_dir)
+  else
+    print("Failed to open tmux pane; falling back to embedded opencode")
+    local ok2, mod = pcall(require, "opencode")
+    if ok2 then
+      mod.toggle()
+    end
+  end
+end, { desc = "Open/focus opencode with proper git root/cwd context" })
+
+-- <leader>ot to open/focus opencode with proper context (git root or cwd)
+keymap.set({ "n", "v" }, "<leader>ot", ":TmuxOpenOpencodeContext<CR>", {
   noremap = true,
   silent = true,
-  desc = "Open/focus opencode (tmux pane)",
+  desc = "Open/focus opencode with proper context",
 })
 
 -- sV to create a new tmux pane vertically with the current buffer directory or current working directory
