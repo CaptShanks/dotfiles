@@ -77,7 +77,7 @@ return {
         end,
       },
     },
-    bigfile = { enabled = true },
+    bigfile = { enabled = false },
     notifier = { enabled = true },
     statuscolumn = { enabled = true },
     indent = { enabled = true, scope = { enabled = true } },
@@ -88,13 +88,13 @@ return {
     explorer = {
       enabled = false, -- Disabled in favor of nvim-tree
     },
+    lazygit = { enabled = true },
     picker = {
       enabled = true,
       prompt = " ",
       focus = "input",
       ui_select = true,
       auto_close = true,
-      
       -- Layout configuration with dynamic preset selection
       layout = {
         cycle = true,
@@ -102,7 +102,6 @@ return {
           return vim.o.columns >= 120 and "default" or "vertical"
         end,
       },
-      
       -- Enhanced matcher configuration
       matcher = {
         fuzzy = true,
@@ -115,17 +114,17 @@ return {
         frecency = true,
         history_bonus = false,
       },
-      
+
       -- Sort configuration
       sort = {
         fields = { "score:desc", "#text", "idx" },
       },
-      
+
       -- Formatter configurations
       formatters = {
         file = {
           filename_first = false,
-          truncate = false,
+          truncate = 300,
           filename_only = false,
           icon_width = 2,
           git_status_hl = true,
@@ -138,13 +137,13 @@ return {
           unselected = true,
         },
       },
-      
+
       -- Source-specific configurations
       sources = {
         files = {
           hidden = false,
           ignored = false,
-          follow = false,
+          follow = true,
         },
         grep = {
           hidden = false,
@@ -158,14 +157,14 @@ return {
           current = true,
           hidden = false,
           unloaded = true,
-          nofile = false,
+          nofile = true,
           modified = false,
         },
         recent = {
           filter = { cwd = false },
         },
       },
-      
+
       -- Toggles configuration
       toggles = {
         follow = "f",
@@ -174,7 +173,7 @@ return {
         modified = "m",
         regex = { icon = "R", value = false },
       },
-      
+
       -- Icons configuration
       icons = {
         files = {
@@ -192,7 +191,7 @@ return {
           untracked = "?",
         },
       },
-      
+
       -- Enhanced window keybindings
       win = {
         input = {
@@ -202,35 +201,35 @@ return {
             ["<C-k>"] = { "list_up", mode = { "i", "n" } },
             ["<Down>"] = { "list_down", mode = { "i", "n" } },
             ["<Up>"] = { "list_up", mode = { "i", "n" } },
-            
+
             -- Actions
             ["<CR>"] = { "confirm", mode = { "n", "i" } },
             ["<Esc>"] = "cancel",
             ["<C-c>"] = { "cancel", mode = "i" },
             ["<Tab>"] = { "select_and_next", mode = { "i", "n" } },
             ["<S-Tab>"] = { "select_and_prev", mode = { "i", "n" } },
-            
+
             -- Split/tab actions
             ["<C-v>"] = { "edit_vsplit", mode = { "i", "n" } },
             ["<C-s>"] = { "edit_split", mode = { "i", "n" } },
             ["<C-t>"] = { "tab", mode = { "n", "i" } },
-            
+
             -- Toggles
             ["<A-p>"] = { "toggle_preview", mode = { "i", "n" } },
             ["<A-h>"] = { "toggle_hidden", mode = { "i", "n" } },
             ["<A-i>"] = { "toggle_ignored", mode = { "i", "n" } },
             ["<A-f>"] = { "toggle_follow", mode = { "i", "n" } },
             ["<C-g>"] = { "toggle_live", mode = { "i", "n" } },
-            
+
             -- History navigation
             ["<C-Up>"] = { "history_back", mode = { "i", "n" } },
             ["<C-Down>"] = { "history_forward", mode = { "i", "n" } },
-            
+
             -- Insert helpers
             ["<C-r><C-w>"] = { "insert_cword", mode = "i" },
             ["<C-r><C-f>"] = { "insert_file", mode = "i" },
             ["<C-r>%"] = { "insert_filename", mode = "i" },
-            
+
             -- Selection and other
             ["<C-a>"] = { "select_all", mode = { "n", "i" } },
             ["<C-q>"] = { "qflist", mode = { "i", "n" } },
@@ -247,22 +246,22 @@ return {
             ["gg"] = "list_top",
             ["<C-d>"] = "list_scroll_down",
             ["<C-u>"] = "list_scroll_up",
-            
+
             -- Actions
             ["<CR>"] = "confirm",
             ["<2-LeftMouse>"] = "confirm",
             ["<Esc>"] = "cancel",
             ["q"] = "close",
-            
+
             -- Selection
             ["<Tab>"] = { "select_and_next", mode = { "n", "x" } },
             ["<S-Tab>"] = { "select_and_prev", mode = { "n", "x" } },
             ["<C-a>"] = "select_all",
-            
+
             -- Preview scrolling
             ["<C-f>"] = "preview_scroll_down",
             ["<C-b>"] = "preview_scroll_up",
-            
+
             -- Focus and help
             ["i"] = "focus_input",
             ["/"] = "toggle_focus",
@@ -273,6 +272,7 @@ return {
     },
   },
   keys = function()
+    local S = require("snacks")
     local P = require("snacks.picker")
     local E = require("snacks.explorer")
 
@@ -295,8 +295,8 @@ return {
                 filename_first = false,
                 truncate = false,
                 filename_only = false,
-              }
-            }
+              },
+            },
           })
         end,
         desc = "Smart Find",
@@ -305,15 +305,15 @@ return {
       {
         "<leader>ff",
         function()
-          P.files({ 
+          P.files({
             cwd = vim.loop.cwd(),
             formatters = {
               file = {
                 filename_first = false,
                 truncate = false,
                 filename_only = false,
-              }
-            }
+              },
+            },
           })
         end,
         desc = "Files (CWD)",
@@ -366,6 +366,13 @@ return {
           P.buffers()
         end,
         desc = "Buffers (Alt)",
+      },
+      {
+        "<leader>G",
+        function()
+          S.lazygit()
+        end,
+        desc = "Lazy Git",
       },
       { "<leader>fN", "<cmd>enew<CR>", desc = "New Buffer" },
       { "<leader>fx", "<cmd>BufferDelete<CR>", desc = "Close Buffer" },
@@ -421,7 +428,7 @@ return {
         desc = "Buffer Lines",
       },
 
-      -- GIT PICKERS  
+      -- GIT PICKERS
       {
         "<leader>gs",
         function()
