@@ -415,20 +415,20 @@ vim.api.nvim_create_user_command("TmuxOpenOpencodeContext", function()
     end
     return
   end
-  
+
   -- Determine the best context directory (prioritize git root, fallback to cwd)
   local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
   local context_dir = vim.fn.getcwd() -- default to current working directory
-  
+
   if git_root and git_root ~= "" and vim.v.shell_error == 0 then
     context_dir = git_root
   end
-  
+
   if context_dir == "" then
     print("No valid context directory found")
     return
   end
-  
+
   -- Look for existing opencode pane and check if it needs context update
   local list = vim.fn.systemlist("tmux list-panes -F '#{pane_id} #{pane_current_command} #{pane_current_path}'")
   if vim.v.shell_error == 0 then
@@ -449,7 +449,7 @@ vim.api.nvim_create_user_command("TmuxOpenOpencodeContext", function()
       end
     end
   end
-  
+
   -- Create new opencode pane with correct context
   local tmuxCommand = string.format("tmux split-window -h -c '%s' 'opencode'", context_dir)
   local ok = os.execute(tmuxCommand)
@@ -520,3 +520,5 @@ vim.keymap.set("n", "<leader>Z", function()
     },
   })
 end, { desc = "Toggle zoom" })
+
+keymap.set("n", "<leader>r", "<cmd>:LspRestartInfo<CR>", { desc = "Restart LSP" })
