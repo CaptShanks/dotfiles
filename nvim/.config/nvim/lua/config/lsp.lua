@@ -35,27 +35,27 @@ vim.api.nvim_create_user_command("LspRestartInfo", function()
   -- Get current buffer's attached clients
   local buf = vim.api.nvim_get_current_buf()
   local clients = vim.lsp.get_clients({ bufnr = buf })
-  
+
   if #clients == 0 then
     vim.notify("No LSP clients attached to current buffer", vim.log.levels.WARN)
     return
   end
-  
+
   local client_names = {}
   for _, client in ipairs(clients) do
     table.insert(client_names, client.name)
     -- Stop the client
     client.stop()
   end
-  
+
   vim.notify("Stopping LSP clients: " .. table.concat(client_names, ", "), vim.log.levels.INFO)
-  
+
   -- Wait for clients to stop, then restart by triggering FileType autocmd
   vim.defer_fn(function()
     local filetype = vim.bo[buf].filetype
     if filetype and filetype ~= "" then
       vim.cmd("doautocmd FileType " .. filetype)
-      
+
       -- Check what restarted after a brief delay
       vim.defer_fn(function()
         local new_clients = vim.lsp.get_clients({ bufnr = buf })
