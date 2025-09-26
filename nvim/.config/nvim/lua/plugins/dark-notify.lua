@@ -5,28 +5,27 @@ return {
 
     -- Configure https://github.com/cormacrelf/dark-notify
     dn.run({
-      -- schemes = {
-      -- 	-- you can use a different colorscheme for each
-      -- 	dark = "catppuccin-mocha",
-      -- 	-- even a different `set background=light/dark` setting or lightline theme
-      -- 	-- if you use lightline, you may want to configure lightline themes,
-      -- 	-- even if they're the same one, especially if the theme reacts to :set bg
-      --
-      -- 	light = {
-      -- 		colorscheme = "catppuccin-latte",
-      -- 	},
-      -- },
+      schemes = {
+        dark = {
+          background = "dark",
+          colorscheme = "tokyonight-night"
+        },
+        light = {
+          background = "light", 
+          colorscheme = "tokyonight-night"
+        }
+      },
       onchange = function(mode)
-        -- optional, you can configure your own things to react to changes.
-        -- this is called at startup and every time dark mode is switched,
-        -- either via the OS, or because you manually set/toggled the mode.
-        -- mode is either "light" or "dark"
+        -- Ensure mode is valid
+        if mode ~= "dark" and mode ~= "light" then
+          mode = "light" -- fallback to light mode
+        end
 
         if mode == "dark" then
-          vim.o.background = "dark" -- or "light" for light mode
+          vim.o.background = "dark"
           vim.cmd([[colorscheme tokyonight-night]])
         else
-          vim.o.background = "light" -- or "light" for light mode
+          vim.o.background = "light"
           vim.cmd([[colorscheme tokyonight-night]])
           -- vim.cmd([[colorscheme gruvbox]])
         end
