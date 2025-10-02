@@ -5,6 +5,7 @@
 
 return {
   "folke/snacks.nvim",
+  enabled = true, -- Re-enabled with scroll module fix
   version = false,
   lazy = false, -- load early so UI modules are ready
   priority = 1000,
@@ -82,7 +83,7 @@ return {
     statuscolumn = { enabled = true },
     indent = { enabled = true, scope = { enabled = true } },
     words = { enabled = true },
-    scroll = { enabled = true },
+    scroll = { enabled = false }, -- Disabled: interferes with G key navigation
     hover = { enabled = true },
     terminal = { enabled = true },
     explorer = {
