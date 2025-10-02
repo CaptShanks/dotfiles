@@ -1,6 +1,6 @@
 return {
   "cormacrelf/dark-notify",
-  enabled = true,
+  enabled = false, -- set to true to enable
   config = function()
     -- Theme Configuration - Change only these two lines!
     local DARK_THEME = "tokyonight-night"
@@ -31,7 +31,7 @@ return {
       onchange = function(mode)
         -- Ensure mode is valid
         if mode ~= "dark" and mode ~= "light" then
-          mode = "light" -- fallback to light mode
+          mode = "dark" -- fallback to light mode
         end
 
         if mode == "dark" then

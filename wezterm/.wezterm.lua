@@ -26,7 +26,9 @@ local function scheme_for_appearance(appearance)
 	end
 end
 
-config.color_scheme = scheme_for_appearance(get_appearance())
+-- config.color_scheme = scheme_for_appearance(get_appearance())
+-- Force Tokyo Night dark theme always
+config.color_scheme = "Tokyo Night"
 
 local function mode_overrides(appearance)
 	local overrides_appearance = {}
@@ -40,19 +42,20 @@ local function mode_overrides(appearance)
 	return overrides_appearance
 end
 
-wezterm.on("window-config-reloaded", function(window, _)
-	local overrides = window:get_config_overrides() or {}
-	local appearance = window:get_appearance()
-	local overrides_appearance = mode_overrides(appearance)
-	local scheme = overrides_appearance.color_scheme
-	if overrides.color_scheme ~= scheme then
-		overrides.color_scheme = scheme
-		overrides.colors = {
-			background = overrides_appearance.background,
-		}
-		window:set_config_overrides(overrides)
-	end
-end)
+-- Disabled dynamic color scheme switching - using fixed Tokyo Night dark
+-- wezterm.on("window-config-reloaded", function(window, _)
+-- 	local overrides = window:get_config_overrides() or {}
+-- 	local appearance = window:get_appearance()
+-- 	local overrides_appearance = mode_overrides(appearance)
+-- 	local scheme = overrides_appearance.color_scheme
+-- 	if overrides.color_scheme ~= scheme then
+-- 		overrides.color_scheme = scheme
+-- 		overrides.colors = {
+-- 			background = overrides_appearance.background,
+-- 		}
+-- 		window:set_config_overrides(overrides)
+-- 	end
+-- end)
 
 --/ dynamic color scheme switching
 config.window_decorations = "RESIZE" -- "TITLE | RESIZE"

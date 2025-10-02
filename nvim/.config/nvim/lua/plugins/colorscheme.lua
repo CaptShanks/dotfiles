@@ -24,7 +24,8 @@ return {
         dim_inactive = false, -- dims inactive windows
         lualine_bold = false, -- When `true`, section headers in the lualine theme will be bold
       })
-      -- Don't set colorscheme here - let dark-notify manage it
+      vim.cmd([[colorscheme tokyonight]])
+      -- Using style = "night" above forces dark theme always
     end,
   },
   {
