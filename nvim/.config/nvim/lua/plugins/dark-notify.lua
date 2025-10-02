@@ -1,19 +1,32 @@
 return {
   "cormacrelf/dark-notify",
+  enabled = true,
   config = function()
+    -- Theme Configuration - Change only these two lines!
+    local DARK_THEME = "tokyonight-night"
+    local LIGHT_THEME = "tokyonight-day"
+
     local dn = require("dark_notify")
+
+    -- Set initial colorscheme based on current background
+    local initial_mode = vim.o.background == "light" and "light" or "dark"
+    if initial_mode == "dark" then
+      vim.cmd("colorscheme " .. DARK_THEME)
+    else
+      vim.cmd("colorscheme " .. LIGHT_THEME)
+    end
 
     -- Configure https://github.com/cormacrelf/dark-notify
     dn.run({
       schemes = {
         dark = {
           background = "dark",
-          colorscheme = "tokyonight-night"
+          colorscheme = DARK_THEME,
         },
         light = {
-          background = "light", 
-          colorscheme = "tokyonight-night"
-        }
+          background = "light",
+          colorscheme = LIGHT_THEME,
+        },
       },
       onchange = function(mode)
         -- Ensure mode is valid
@@ -23,19 +36,14 @@ return {
 
         if mode == "dark" then
           vim.o.background = "dark"
-          vim.cmd([[colorscheme tokyonight-night]])
+          vim.cmd("colorscheme " .. DARK_THEME)
         else
           vim.o.background = "light"
-          vim.cmd([[colorscheme tokyonight-night]])
-          -- vim.cmd([[colorscheme gruvbox]])
+          vim.cmd("colorscheme " .. LIGHT_THEME)
         end
 
-        -- for all windows except the current one, set background based on dark mode
-        for _, win in ipairs(vim.api.nvim_list_wins()) do
-          if win ~= vim.api.nvim_get_current_win() then
-            set_background_based_dark_mode(win, false)
-          end
-        end
+        -- Refresh UI components after theme change
+        vim.cmd("redraw!")
       end,
     })
   end,
