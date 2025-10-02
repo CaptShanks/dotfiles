@@ -227,11 +227,11 @@ alias kctx='kubectl config use-context $(kubectl config get-contexts -o name | f
 export PATH="${PATH}:${HOME}/.krew/bin"
 
 # helm autocomplete
-source <(helm completion zsh)
+# source <(helm completion zsh)
 
 # aws autocomplete
 # only if installed
-[ -f $(which aws_completer) ] && complete -C $(which aws_completer) aws
+# [ -f $(which aws_completer) ] && complete -C $(which aws_completer) aws
 
 # Idea fix to use COMMAND ARROWS
 # bindkey "\e\eOD" beginning-of-line
@@ -281,13 +281,18 @@ tmuxs () {
 
 }
 # TF autocomplete
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C terraform terraform
+# autoload -U +X bashcompinit && bashcompinit
+# complete -o nospace -C terraform terraform
+
+# carapace shell-autocomplete
+export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense' # optional
+zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
+source <(carapace _carapace)
 
 # Check if stern is installed if so enable completion
-[ -f $(which stern) ] && source <(stern --completion=zsh)
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-export PATH="${HOME}/.local/bin":${PATH}
+# [ -f $(which stern) ] && source <(stern --completion=zsh)
+# [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+# export PATH="${HOME}/.local/bin":${PATH}
 
 export PATH="/usr/local/bin:$PATH"
 . "/Users/sjc-lp03742/.deno/env"
@@ -315,3 +320,5 @@ unset __conda_setup
 . "$HOME/.atuin/bin/env"
 
 eval "$(atuin init zsh)"
+
+[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
