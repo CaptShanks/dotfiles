@@ -91,7 +91,7 @@ return {
     },
     lazygit = { enabled = true },
     picker = {
-      enabled = true,
+      enabled = false, -- Disabled: all picking handled by fzf-lua
       prompt = " ",
       focus = "input",
       ui_select = true,
@@ -125,7 +125,7 @@ return {
       formatters = {
         file = {
           filename_first = false,
-          truncate = 300,
+          truncate = false, -- Don't truncate paths
           filename_only = false,
           icon_width = 2,
           git_status_hl = true,
@@ -142,8 +142,8 @@ return {
       -- Source-specific configurations
       sources = {
         files = {
-          hidden = false,
-          ignored = false,
+          hidden = true, -- Include hidden files/directories (dotfiles)
+          ignored = true, -- Include ignored files (git submodules, etc.)
           follow = true,
         },
         grep = {
@@ -274,100 +274,10 @@ return {
   },
   keys = function()
     local S = require("snacks")
-    local P = require("snacks.picker")
-    local E = require("snacks.explorer")
-
-    local function curdir()
-      local name = vim.api.nvim_buf_get_name(0)
-      if name == "" then
-        return vim.loop.cwd()
-      end
-      return vim.fn.fnamemodify(name, ":p:h")
-    end
+    -- local P = require("snacks.picker")  -- DISABLED: all picking handled by fzf-lua
+    -- local E = require("snacks.explorer") -- DISABLED: using nvim-tree instead
 
     return {
-      -- SMART PICKER
-      {
-        "<leader><space>",
-        function()
-          P.smart({
-            formatters = {
-              file = {
-                filename_first = false,
-                truncate = false,
-                filename_only = false,
-              },
-            },
-          })
-        end,
-        desc = "Smart Find",
-      },
-      -- FILES
-      {
-        "<leader>ff",
-        function()
-          P.files({
-            cwd = vim.loop.cwd(),
-            formatters = {
-              file = {
-                filename_first = false,
-                truncate = false,
-                filename_only = false,
-              },
-            },
-          })
-        end,
-        desc = "Files (CWD)",
-      },
-      {
-        "<leader>fd",
-        function()
-          P.files({ cwd = curdir() })
-        end,
-        desc = "Files (Buffer Dir)",
-      },
-      {
-        "<leader>fF",
-        function()
-          P.resume({ picker = "files", cwd = curdir() })
-        end,
-        desc = "[Resume] Files (Buf Dir)",
-      },
-      {
-        "<leader>fG",
-        function()
-          P.git_files()
-        end,
-        desc = "Git Files",
-      },
-      {
-        "<leader>fr",
-        function()
-          P.recent({ filter = { cwd = true } })
-        end,
-        desc = "Recent (CWD)",
-      },
-      {
-        "<leader>fR",
-        function()
-          P.recent()
-        end,
-        desc = "Recent (All)",
-      },
-      {
-        "<leader>fb",
-        function()
-          P.buffers()
-        end,
-        desc = "Buffers",
-      },
-      {
-        "<leader>,",
-        function()
-          P.buffers()
-        end,
-        desc = "Buffers (Alt)",
-      },
       {
         "<leader>G",
         function()
@@ -377,203 +287,6 @@ return {
       },
       { "<leader>fN", "<cmd>enew<CR>", desc = "New Buffer" },
       { "<leader>fx", "<cmd>BufferDelete<CR>", desc = "Close Buffer" },
-
-      -- GREP / SEARCH
-      {
-        "<leader>/",
-        function()
-          P.grep()
-        end,
-        desc = "Grep (Root)",
-      },
-      {
-        "<leader>fs",
-        function()
-          P.grep()
-        end,
-        desc = "Grep (Root)",
-      },
-      {
-        "<leader>fg",
-        function()
-          P.grep({ cwd = curdir() })
-        end,
-        desc = "Grep (Buffer Dir)",
-      },
-      {
-        "<leader>fD",
-        function()
-          P.resume({ picker = "grep" })
-        end,
-        desc = "[Resume] Grep",
-      },
-      {
-        "<leader>fw",
-        function()
-          P.grep_word()
-        end,
-        desc = "Grep Word (Root)",
-      },
-      {
-        "<leader>fW",
-        function()
-          P.grep_word({ cwd = curdir() })
-        end,
-        desc = "Grep Word (Buffer Dir)",
-      },
-      {
-        "<leader>fl",
-        function()
-          P.lines()
-        end,
-        desc = "Buffer Lines",
-      },
-
-      -- GIT PICKERS
-      {
-        "<leader>gs",
-        function()
-          P.git_status()
-        end,
-        desc = "Git Status",
-      },
-      {
-        "<leader>gc",
-        function()
-          P.git_log()
-        end,
-        desc = "Git Commits",
-      },
-      {
-        "<leader>gb",
-        function()
-          P.git_log_buffer()
-        end,
-        desc = "Git Buffer Commits",
-      },
-
-      -- COMMANDS / HISTORY
-      {
-        "q:",
-        function()
-          P.command_history()
-        end,
-        mode = { "n", "v" },
-        desc = "Command History",
-      },
-      {
-        "<leader>:",
-        function()
-          P.commands()
-        end,
-        mode = { "n", "v" },
-        desc = "Commands",
-      },
-
-      -- LSP PICKERS (enhanced with buffer context)
-      {
-        "gd",
-        function()
-          P.lsp_definitions()
-        end,
-        desc = "LSP Definitions",
-      },
-      {
-        "gr",
-        function()
-          P.lsp_references()
-        end,
-        desc = "LSP References",
-      },
-      {
-        "gi",
-        function()
-          P.lsp_implementations()
-        end,
-        desc = "LSP Implementations",
-      },
-      {
-        "gt",
-        function()
-          P.lsp_type_definitions()
-        end,
-        desc = "LSP Type Defs",
-      },
-      {
-        "<leader>fs",
-        function()
-          P.lsp_symbols()
-        end,
-        desc = "LSP Symbols",
-      },
-      {
-        "<leader>fS",
-        function()
-          P.lsp_workspace_symbols()
-        end,
-        desc = "LSP Workspace Symbols",
-      },
-      {
-        "<leader>gd",
-        function()
-          P.diagnostics({ buffer = 0 })
-        end,
-        desc = "Buffer Diagnostics",
-      },
-      {
-        "<leader>gD",
-        function()
-          P.diagnostics()
-        end,
-        desc = "Workspace Diagnostics",
-      },
-
-      -- MISC PICKERS
-      {
-        "<leader>fh",
-        function()
-          P.help()
-        end,
-        desc = "Help Tags",
-      },
-      {
-        "<leader>fk",
-        function()
-          P.keymaps()
-        end,
-        desc = "Keymaps",
-      },
-      {
-        "<leader>fo",
-        function()
-          P.vim_options()
-        end,
-        desc = "Vim Options",
-      },
-      {
-        "<leader>fH",
-        function()
-          P.highlights()
-        end,
-        desc = "Highlights",
-      },
-      {
-        "<leader>fj",
-        function()
-          P.jumps()
-        end,
-        desc = "Jump List",
-      },
-      {
-        "<leader>fm",
-        function()
-          P.marks()
-        end,
-        desc = "Marks",
-      },
-
-      -- Note: Explorer disabled in favor of nvim-tree (see nvim-tree.lua)
-      -- nvim-tree handles all file exploration needs
 
       -- TERMINAL (minimal replacement of toggleterm)
       {

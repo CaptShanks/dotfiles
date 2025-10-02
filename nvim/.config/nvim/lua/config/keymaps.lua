@@ -158,8 +158,7 @@ keymap.set("v", "<leader>fa", function()
 end, { desc = "Open GrugFar for find and replace" })
 
 -- keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" }) -- TODO: replace with snacks picker integration or todo-comments direct call
--- keymap.set("n", "<leader>fb", "<cmd>FzfLua buffers<cr>", { desc = "Select Buffer" }) -- REPLACED by snacks
-keymap.set("n", "<leader>fl", "<cmd>FzfLua blines<cr>", { desc = "Search in current Buffer" })
+-- Buffer search moved to fzf-lua plugin keys
 
 -- EXPLORER
 -- Define a global function to change directory to git root
@@ -321,10 +320,7 @@ keymap.set("n", "<leader>ad", ":DiffLastTwo<CR>", { desc = "Compare Last Two Buf
 -- add action to toggle word wrap
 keymap.set("n", "<leader>aw", "<cmd>set wrap!<CR>", { desc = "Toggle word wrap" })
 
--- override q: wiht FzfLua command_history
--- keymap.set({ "n", "v" }, "q:", "<cmd>FzfLua command_history<cr>", { desc = "Command history" }) -- REPLACED by snacks
--- leader : to open FzfLua commands
--- keymap.set({ "n", "v" }, "<leader>:", "<cmd>FzfLua commands<cr>", { desc = "FzfLua commands" }) -- REPLACED by snacks
+-- Command history and commands now handled by fzf-lua plugin directly
 
 -- Create a new tmux pane with the current file's directory or current working directory
 -- (vc|hc|vb|hb) v/h = vertical/horizontal, c/b = cwd/buffer dir
