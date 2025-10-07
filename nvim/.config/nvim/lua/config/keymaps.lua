@@ -21,8 +21,8 @@ keymap.set("n", "x", '"_x')
 keymap.set({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
 -- bind fd to quit one
 keymap.set("n", "fd", "<cmd>q<cr>", { desc = "Quit" })
--- bind fg to delete buffer
-keymap.set("n", "fg", "<cmd>bp <bar> bd #<CR>", { desc = "Close buffer" })
+-- bind fx to delete buffer (changed from fg to avoid G conflicts)
+keymap.set("n", "fx", "<cmd>bp <bar> bd #<CR>", { desc = "Close buffer" })
 
 -- Lazy hotkey
 keymap.set("n", "<leader>L", "<cmd>Lazy<cr>", { desc = "Lazy" })
@@ -60,67 +60,66 @@ keymap.set("n", "<leader>qn", "<cmd>cnext<CR>", { desc = "Go to next quickfix" }
 keymap.set("n", "<leader>qp", "<cmd>cprev<CR>", { desc = "Go to previous quickfix" }) -- go to previous quickfix
 
 -- NAVIGATION/FINDING
+-- MIGRATION: Original fzf-lua / telescope mappings commented below and replaced by snacks.nvim pickers.
+-- To rollback: uncomment original block and remove snacks keymaps (see snacks.lua spec).
 -- keymap.set("n", "<leader>ff", "<cmd>Telescope find_files follow=true<cr>", { desc = "Fuzzy find files in cwd" })
-keymap.set("n", "<leader> ", function()
-  require("fzf-lua").files({
-    resume = false,
-  })
-end, { desc = "Fuzzy find files in cwd" })
+-- keymap.set("n", "<leader> ", function()
+--   require("fzf-lua").files({
+--     resume = false,
+--   })
+-- end, { desc = "Fuzzy find files in cwd" }) -- REPLACED by snacks (see snacks.lua)
 
-keymap.set("n", "<leader>ff", function()
-  -- require("telescope.builtin").find_files({ cwd = vim.fn.expand("%:p:h"), follow = true })
-  require("fzf-lua").files({
-    cwd = vim.fn.expand("%:p:h"),
-    resume = false,
-  })
-end, { desc = "Fuzzy find files in current buffer dir" })
+-- keymap.set("n", "<leader>ff", function()
+--   require("fzf-lua").files({
+--     cwd = vim.fn.expand("%:p:h"),
+--     resume = false,
+--   })
+-- end, { desc = "Fuzzy find files in current buffer dir" }) -- REPLACED by snacks
 
-keymap.set("n", "<leader>fF", function()
-  -- require("telescope.builtin").find_files({ cwd = vim.fn.expand("%:p:h"), follow = true })
-  require("fzf-lua").files({
-    cwd = vim.fn.expand("%:p:h"),
-    resume = true,
-  })
-end, { desc = "[Resume] Fuzzy find files in current buffer dir" })
+-- keymap.set("n", "<leader>fF", function()
+--   require("fzf-lua").files({
+--     cwd = vim.fn.expand("%:p:h"),
+--     resume = true,
+--   })
+-- end, { desc = "[Resume] Fuzzy find files in current buffer dir" }) -- REPLACED by snacks
 
-keymap.set("n", "<leader>fr", function()
-  require("fzf-lua").oldfiles({
-    cwd_only = true,
-    -- show old files in current session as well
-    include_current_session = true,
-    resume = false,
-  })
-end, { desc = "Old files in current dir" })
-keymap.set("n", "<leader>fR", function()
-  require("fzf-lua").oldfiles()
-end, { desc = "Fuzzy find recent files across sessions" })
+-- keymap.set("n", "<leader>fr", function()
+--   require("fzf-lua").oldfiles({
+--     cwd_only = true,
+--     include_current_session = true,
+--     resume = false,
+--   })
+-- end, { desc = "Old files in current dir" }) -- REPLACED by snacks
+-- keymap.set("n", "<leader>fR", function()
+--   require("fzf-lua").oldfiles()
+-- end, { desc = "Fuzzy find recent files across sessions" }) -- REPLACED by snacks
 
 -- <leader>fx to delete buffer/close tab
 keymap.set("n", "<leader>fx", "<cmd>BufferDelete<CR>", { desc = "Close buffer" })
 -- <leader>fN to create new buffer
 keymap.set("n", "<leader>fN", "<cmd>enew<CR>", { desc = "New buffer" })
 
-keymap.set(
-  "n",
-  "<leader>fs",
-  "<cmd>FzfLua live_grep_glob resume=true<cr>",
-  { desc = "Live grep with rg --glob support" }
-)
+-- keymap.set(
+--   "n",
+--   "<leader>fs",
+--   "<cmd>FzfLua live_grep_glob resume=true<cr>",
+--   { desc = "Live grep with rg --glob support" }
+--) -- REPLACED by snacks
 
-keymap.set("n", "<leader>fd", function()
-  require("fzf-lua").live_grep_glob({
-    cwd = vim.fn.expand("%:p:h"),
-    resume = false,
-  })
-end, { desc = "Live grep in current buffer directory" })
-keymap.set("n", "<leader>fD", function()
-  require("fzf-lua").live_grep_glob({
-    cwd = vim.fn.expand("%:p:h"),
-    resume = true,
-  })
-end, { desc = "[Resume]Live grep in current buffer directory" })
-keymap.set("n", "<leader>fc", "<cmd>FzfLua grep_cword<cr>", { desc = "Find string under cursor in cwd" })
-keymap.set("n", "<leader>fl", "<cmd>FzfLua lgrep_curbuf resume=true<cr>", { desc = "Live grep in current buffer" })
+-- keymap.set("n", "<leader>fd", function()
+--   require("fzf-lua").live_grep_glob({
+--     cwd = vim.fn.expand("%:p:h"),
+--     resume = false,
+--   })
+-- end, { desc = "Live grep in current buffer directory" }) -- REPLACED by snacks
+-- keymap.set("n", "<leader>fD", function()
+--   require("fzf-lua").live_grep_glob({
+--     cwd = vim.fn.expand("%:p:h"),
+--     resume = true,
+--   })
+-- end, { desc = "[Resume]Live grep in current buffer directory" }) -- REPLACED by snacks
+-- keymap.set("n", "<leader>fc", "<cmd>FzfLua grep_cword<cr>", { desc = "Find string under cursor in cwd" }) -- REPLACED by snacks
+-- keymap.set("n", "<leader>fl", "<cmd>FzfLua lgrep_curbuf resume=true<cr>", { desc = "Live grep in current buffer" }) -- REPLACED by snacks lines picker
 
 keymap.set("n", "<leader>fa", function()
   require("grug-far").toggle_instance({ instanceName = "far", staticTitle = "Find and Replace" })
@@ -158,9 +157,8 @@ keymap.set("v", "<leader>fa", function()
   })
 end, { desc = "Open GrugFar for find and replace" })
 
-keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" })
-keymap.set("n", "<leader>fb", "<cmd>FzfLua buffers<cr>", { desc = "Select Buffer" })
-keymap.set("n", "<leader>fl", "<cmd>FzfLua blines<cr>", { desc = "Search in current Buffer" })
+-- keymap.set("n", "<leader>ft", "<cmd>TodoTelescope<cr>", { desc = "Find todos" }) -- TODO: replace with snacks picker integration or todo-comments direct call
+-- Buffer search moved to fzf-lua plugin keys
 
 -- EXPLORER
 -- Define a global function to change directory to git root
@@ -204,12 +202,16 @@ vim.api.nvim_set_keymap(
 )
 
 -- neotree
-keymap.set("n", "<leader>ee", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" }) -- toggle file explorer
-keymap.set("n", "<leader>et", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle file explorer" }) -- toggle file explorer
-keymap.set("n", "fe", "<cmd>NvimTreeFocus<CR>", { desc = "Focus file explorer" }) -- toggle file explorer
-keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFile<CR>", { desc = "File explorer on current file" }) -- toggle file explorer on current file
-keymap.set("n", "<leader>ec", "<cmd>NvimTreeClose<CR>", { desc = "Close file explorer" }) -- collapse file explorer
-keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh file explorer" }) -- refresh file explorer
+-- EXPLORERS: Dual setup with distinct responsibilities
+-- nvim-tree: Traditional sidebar explorer (lowercase 'e')
+keymap.set("n", "<leader>ee", "<cmd>NvimTreeFocus<CR>", { desc = "Focus nvim-tree sidebar" })
+keymap.set("n", "<leader>et", "<cmd>NvimTreeToggle<CR>", { desc = "Toggle nvim-tree sidebar" })
+keymap.set("n", "fe", "<cmd>NvimTreeFocus<CR>", { desc = "Focus nvim-tree sidebar" })
+keymap.set("n", "<leader>ef", "<cmd>NvimTreeFindFile<CR>", { desc = "Find file in nvim-tree" })
+keymap.set("n", "<leader>ec", "<cmd>NvimTreeClose<CR>", { desc = "Close nvim-tree sidebar" })
+keymap.set("n", "<leader>er", "<cmd>NvimTreeRefresh<CR>", { desc = "Refresh nvim-tree sidebar" })
+
+-- Note: Snacks explorer uses capital 'E' (<leader>E*) - see snacks.lua
 
 -- ACTIONS
 -- clear search highlights
@@ -265,12 +267,12 @@ keymap.set(
 )
 
 -- telescope diff
-vim.keymap.set("n", "<leader>aD", function()
-  require("telescope").extensions.diff.diff_files({ hidden = true })
-end, { desc = "Compare 2 files" })
-vim.keymap.set("n", "<leader>ad", function()
-  require("telescope").extensions.diff.diff_current({ hidden = true })
-end, { desc = "Compare file with current" })
+-- vim.keymap.set("n", "<leader>aD", function()
+--   require("telescope").extensions.diff.diff_files({ hidden = true })
+-- end, { desc = "Compare 2 files" }) -- Disabled (telescope removed); custom diff helpers below remain
+-- vim.keymap.set("n", "<leader>ad", function()
+--   require("telescope").extensions.diff.diff_current({ hidden = true })
+-- end, { desc = "Compare file with current" }) -- Disabled (telescope removed); alternative custom commands below
 
 -- action to select all text leader aa
 keymap.set({ "v", "n" }, "<leader>aa", "ggVG", { noremap = true, silent = true, desc = "Select all text" })
@@ -318,10 +320,7 @@ keymap.set("n", "<leader>ad", ":DiffLastTwo<CR>", { desc = "Compare Last Two Buf
 -- add action to toggle word wrap
 keymap.set("n", "<leader>aw", "<cmd>set wrap!<CR>", { desc = "Toggle word wrap" })
 
--- override q: wiht FzfLua command_history
-keymap.set({ "n", "v" }, "q:", "<cmd>FzfLua command_history<cr>", { desc = "Command history" })
--- leader : to open FzfLua commands
-keymap.set({ "n", "v" }, "<leader>:", "<cmd>FzfLua commands<cr>", { desc = "FzfLua commands" })
+-- Command history and commands now handled by fzf-lua plugin directly
 
 -- Create a new tmux pane with the current file's directory or current working directory
 -- (vc|hc|vb|hb) v/h = vertical/horizontal, c/b = cwd/buffer dir
@@ -412,20 +411,20 @@ vim.api.nvim_create_user_command("TmuxOpenOpencodeContext", function()
     end
     return
   end
-  
+
   -- Determine the best context directory (prioritize git root, fallback to cwd)
   local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
   local context_dir = vim.fn.getcwd() -- default to current working directory
-  
+
   if git_root and git_root ~= "" and vim.v.shell_error == 0 then
     context_dir = git_root
   end
-  
+
   if context_dir == "" then
     print("No valid context directory found")
     return
   end
-  
+
   -- Look for existing opencode pane and check if it needs context update
   local list = vim.fn.systemlist("tmux list-panes -F '#{pane_id} #{pane_current_command} #{pane_current_path}'")
   if vim.v.shell_error == 0 then
@@ -446,7 +445,7 @@ vim.api.nvim_create_user_command("TmuxOpenOpencodeContext", function()
       end
     end
   end
-  
+
   -- Create new opencode pane with correct context
   local tmuxCommand = string.format("tmux split-window -h -c '%s' 'opencode'", context_dir)
   local ok = os.execute(tmuxCommand)
@@ -517,3 +516,5 @@ vim.keymap.set("n", "<leader>Z", function()
     },
   })
 end, { desc = "Toggle zoom" })
+
+keymap.set("n", "<leader>r", "<cmd>:LspRestartInfo<CR>", { desc = "Restart LSP" })

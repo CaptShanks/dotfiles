@@ -1,4 +1,5 @@
 return {
+  enabled = false, -- disabled while telescope removed
   "axkirillov/easypick.nvim",
   requires = "nvim-telescope/telescope.nvim",
 

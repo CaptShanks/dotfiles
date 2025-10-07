@@ -1,5 +1,6 @@
 return {
   "nvim-tree/nvim-tree.lua",
+  enabled = true, -- Re-enabled to work alongside Snacks
   dependencies = { { "hnvim-tree/nvim-web-devicons" } },
   config = function()
     local nvimtree = require("nvim-tree")
@@ -12,7 +13,8 @@ return {
       local api = require("nvim-tree.api")
 
       local function opts(desc)
-        return {
+-- Disabled in favor of snacks.explorer (see snacks.lua). Leave file for rollback.
+return {
           desc = "nvim-tree: " .. desc,
           buffer = bufnr,
           noremap = true,

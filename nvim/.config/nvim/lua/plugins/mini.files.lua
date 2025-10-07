@@ -1,7 +1,7 @@
 return {
   "echasnovski/mini.files",
   version = "*",
-  config = {
+  opts = {
     -- Customization of shown content
     content = {
       -- Predicate for which file system entries to show

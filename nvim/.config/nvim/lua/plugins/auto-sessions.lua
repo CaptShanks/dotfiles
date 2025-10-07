@@ -33,8 +33,8 @@ return {
       },
 
       post_restore_cmds = {
-        -- Open NvimTree after session restore
-        "NvimTreeOpen",
+        -- Previously: "NvimTreeOpen". Using Snacks explorer toggle if enabled.
+        "lua if package.loaded['snacks.explorer'] then require('snacks.explorer').open() end",
       },
 
       lsp_stop_on_restore = false, -- Should language servers be stopped when restoring a session. Can also be a function that will be called if set. Not called on autorestore from startup

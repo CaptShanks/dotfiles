@@ -1,68 +1,73 @@
 return {
   {
-    "GustavoPrietoP/doom-themes.nvim",
+    "folke/tokyonight.nvim",
+    lazy = false,
     priority = 1000,
     config = function()
-      -- Set the colorscheme
-      vim.o.background = "dark"
-      vim.cmd.colorscheme("doom-moonlight")
+      require("tokyonight").setup({
+        style = "night", -- The theme comes in three styles, `storm`, `moon`, a darker variant `night` and `day`
+        light_style = "day", -- The theme is used when the background is set to light
+        transparent = true, -- Enable transparent background
+        terminal_colors = true, -- Configure the colors used when opening a `:terminal` in Neovim
+        styles = {
+          comments = { italic = true },
+          keywords = { italic = true },
+          functions = {},
+          variables = {},
+          -- Background styles. Can be "dark", "transparent" or "normal"
+          sidebars = "transparent", -- style for sidebars, see below
+          floats = "transparent", -- style for floating windows
+        },
+        sidebars = { "qf", "help" }, -- Set a darker background on sidebar-like windows
+        day_brightness = 0.3, -- Adjusts the brightness of the colors of the **Day** style
+        hide_inactive_statusline = false, -- Enabling this option will hide inactive statuslines
+        dim_inactive = false, -- dims inactive windows
+        lualine_bold = false, -- When `true`, section headers in the lualine theme will be bold
+      })
+      vim.cmd([[colorscheme tokyonight-night]])
+      -- Using style = "night" above forces dark theme always
     end,
   },
   {
     "ellisonleao/gruvbox.nvim",
+    enabled = true,
     priority = 1000,
-    config = true,
-    opts = {
-      terminal_colors = true, -- add neovim terminal colors
-      undercurl = true,
-      underline = true,
-      bold = true,
-      italic = {
-        strings = true,
-        emphasis = true,
-        comments = true,
-        operators = false,
-        folds = true,
-      },
-      strikethrough = true,
-      invert_selection = false,
-      invert_signs = false,
-      invert_tabline = false,
-      invert_intend_guides = false,
-      inverse = true, -- invert background for search, diffs, statuslines and errors
-      contrast = "", -- can be "hard", "soft" or empty string
-      palette_overrides = {},
-      overrides = {},
-      dim_inactive = false,
-      transparent_mode = true,
-    },
   },
   {
     "catppuccin/nvim",
     name = "catppuccin",
+    enabled = true,
     priority = 1000,
-    config = function()
-      -- Set the colorscheme
-      vim.cmd("colorscheme catppuccin-mocha") -- catppuccin-latte, catppuccin-frappe, catppuccin-macchiato, catppuccin-mocha
-    end,
   },
   {
     "rebelot/kanagawa.nvim",
+    enabled = true,
     priority = 1000,
-    config = function()
-      -- Set the colorscheme
-      -- vim.cmd("colorscheme kanagawa")
-    end,
   },
   {
     "EdenEast/nightfox.nvim",
+    enabled = true,
     priority = 1000,
-    config = true,
+  },
+  -- Additional colorschemes
+  {
+    "GustavoPrietoP/doom-themes.nvim",
+    enabled = true,
+    priority = 1000,
   },
   {
-  "folke/tokyonight.nvim",
-  lazy = false,
-  priority = 1000,
-  opts = {},
-}
+    "sontungexpt/witch",
+    enabled = true,
+    priority = 1000,
+  },
+  {
+    "0xstepit/flow.nvim",
+    enabled = true,
+    priority = 1000,
+  },
+  {
+    "glepnir/zephyr-nvim",
+    enabled = true,
+    priority = 1000,
+  },
 }

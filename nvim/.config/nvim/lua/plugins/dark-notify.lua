@@ -1,42 +1,49 @@
 return {
   "cormacrelf/dark-notify",
+  enabled = false, -- set to true to enable
   config = function()
+    -- Theme Configuration - Change only these two lines!
+    local DARK_THEME = "tokyonight-night"
+    local LIGHT_THEME = "tokyonight-day"
+
     local dn = require("dark_notify")
+
+    -- Set initial colorscheme based on current background
+    local initial_mode = vim.o.background == "light" and "light" or "dark"
+    if initial_mode == "dark" then
+      vim.cmd("colorscheme " .. DARK_THEME)
+    else
+      vim.cmd("colorscheme " .. LIGHT_THEME)
+    end
 
     -- Configure https://github.com/cormacrelf/dark-notify
     dn.run({
-      -- schemes = {
-      -- 	-- you can use a different colorscheme for each
-      -- 	dark = "catppuccin-mocha",
-      -- 	-- even a different `set background=light/dark` setting or lightline theme
-      -- 	-- if you use lightline, you may want to configure lightline themes,
-      -- 	-- even if they're the same one, especially if the theme reacts to :set bg
-      --
-      -- 	light = {
-      -- 		colorscheme = "catppuccin-latte",
-      -- 	},
-      -- },
+      schemes = {
+        dark = {
+          background = "dark",
+          colorscheme = DARK_THEME,
+        },
+        light = {
+          background = "light",
+          colorscheme = LIGHT_THEME,
+        },
+      },
       onchange = function(mode)
-        -- optional, you can configure your own things to react to changes.
-        -- this is called at startup and every time dark mode is switched,
-        -- either via the OS, or because you manually set/toggled the mode.
-        -- mode is either "light" or "dark"
+        -- Ensure mode is valid
+        if mode ~= "dark" and mode ~= "light" then
+          mode = "dark" -- fallback to light mode
+        end
 
         if mode == "dark" then
-          vim.o.background = "dark" -- or "light" for light mode
-          vim.cmd([[colorscheme tokyonight-night]])
+          vim.o.background = "dark"
+          vim.cmd("colorscheme " .. DARK_THEME)
         else
-          vim.o.background = "light" -- or "light" for light mode
-          vim.cmd([[colorscheme tokyonight-night]])
-          -- vim.cmd([[colorscheme gruvbox]])
+          vim.o.background = "light"
+          vim.cmd("colorscheme " .. LIGHT_THEME)
         end
 
-        -- for all windows except the current one, set background based on dark mode
-        for _, win in ipairs(vim.api.nvim_list_wins()) do
-          if win ~= vim.api.nvim_get_current_win() then
-            set_background_based_dark_mode(win, false)
-          end
-        end
+        -- Refresh UI components after theme change
+        vim.cmd("redraw!")
       end,
     })
   end,

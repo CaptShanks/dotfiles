@@ -1,11 +1,14 @@
 -- reference https://www.josean.com/posts/how-to-setup-neovim-2024
-if vim.g.vscode then
-    -- VSCode extension
-    require("config.keymaps")
-    require("config.lazy")
-else
-    -- ordinary Neovim
     require("config.keymaps")
     require("config.options")
     require("config.lazy")
-end
+    require("config.lsp")
+
+-- Handle jobs gracefully on exit
+vim.api.nvim_create_autocmd("VimLeave", {
+  callback = function()
+    vim.cmd("silent! LspStop")
+    -- Give jobs time to cleanup
+    vim.wait(100)
+  end,
+})
