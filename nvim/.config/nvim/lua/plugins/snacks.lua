@@ -91,18 +91,34 @@ return {
     },
     lazygit = { enabled = true },
     picker = {
-      enabled = false, -- Disabled: all picking handled by fzf-lua
+      enabled = true,
       prompt = " ",
       focus = "input",
       ui_select = true,
       auto_close = true,
       -- Layout configuration with dynamic preset selection
       layout = {
-        cycle = true,
-        preset = function()
-          return vim.o.columns >= 120 and "default" or "vertical"
-        end,
+        layout = {
+          box = "horizontal",
+          width = 0.95,
+          min_width = 120,
+          height = 0.95,
+          {
+            box = "vertical",
+            border = "rounded",
+            title = "{title} {live} {flags}",
+            { win = "input", height = 1, border = "bottom" },
+            { win = "list", border = "none" },
+          },
+          { win = "preview", title = "{preview}", border = "rounded", width = 0.3 },
+        },
       },
+      -- layout = {
+      --   cycle = true,
+      --   preset = function()
+      --     return vim.o.columns >= 120 and "telescope" or "vertical"
+      --   end,
+      -- },
       -- Enhanced matcher configuration
       matcher = {
         fuzzy = true,
@@ -124,8 +140,8 @@ return {
       -- Formatter configurations
       formatters = {
         file = {
-          filename_first = false,
-          truncate = false, -- Don't truncate paths
+          filename_first = true,
+          truncate = 200,
           filename_only = false,
           icon_width = 2,
           git_status_hl = true,
@@ -142,8 +158,8 @@ return {
       -- Source-specific configurations
       sources = {
         files = {
-          hidden = true, -- Include hidden files/directories (dotfiles)
-          ignored = true, -- Include ignored files (git submodules, etc.)
+          hidden = false, -- Include hidden files/directories (dotfiles)
+          ignored = false, -- Include ignored files (git submodules, etc.)
           follow = true,
         },
         grep = {
@@ -274,8 +290,8 @@ return {
   },
   keys = function()
     local S = require("snacks")
-    -- local P = require("snacks.picker")  -- DISABLED: all picking handled by fzf-lua
-    -- local E = require("snacks.explorer") -- DISABLED: using nvim-tree instead
+    local P = require("snacks.picker")
+    local E = require("snacks.explorer")
 
     return {
       {
@@ -296,6 +312,188 @@ return {
         end,
         mode = { "n", "t" },
         desc = "Terminal Toggle",
+      },
+
+      -- Core pickers
+      {
+        "<leader><space>",
+        function()
+          P.smart()
+        end,
+        desc = "Smart Find",
+      },
+      {
+        "<leader>fb",
+        function()
+          P.buffers()
+        end,
+        desc = "Buffers",
+      },
+
+      -- File pickers
+      {
+        "<leader>ff",
+        function()
+          P.files({ cwd = vim.fn.getcwd() })
+        end,
+        desc = "Files (CWD)",
+      },
+      {
+        "<leader>fF",
+        function()
+          P.files({ cwd = vim.fn.expand("%:p:h") })
+        end,
+        desc = "Find Files (current dir)",
+      },
+      {
+        "<leader>fr",
+        function()
+          P.recent()
+        end,
+        desc = "Recent Files",
+      },
+      {
+        "<leader>fR",
+        function()
+          P.recent({ filter = { cwd = true } })
+        end,
+        desc = "Recent Files (cwd)",
+      },
+
+      -- Grep/Search pickers
+      {
+        "<leader>fs",
+        function()
+          P.grep()
+        end,
+        desc = "Live Grep",
+      },
+      {
+        "<leader>fd",
+        function()
+          P.grep({ cwd = vim.fn.expand("%:p:h") })
+        end,
+        desc = "Grep (current dir)",
+      },
+      {
+        "<leader>fD",
+        function()
+          P.grep({ cwd = vim.fn.expand("%:p:h"), live = true })
+        end,
+        desc = "Live Grep (current dir)",
+      },
+      {
+        "<leader>fc",
+        function()
+          P.grep_word()
+        end,
+        desc = "Grep word under cursor",
+      },
+      {
+        "<leader>fl",
+        function()
+          P.lines()
+        end,
+        desc = "Lines in open buffers",
+      },
+
+      -- Commands and History
+      {
+        "<leader>:",
+        function()
+          P.commands()
+        end,
+        desc = "Commands",
+      },
+      {
+        "q:",
+        function()
+          P.command_history()
+        end,
+        desc = "Command History",
+      },
+
+      -- Additional pickers
+      {
+        "<leader>fh",
+        function()
+          P.help()
+        end,
+        desc = "Help Tags",
+      },
+      {
+        "<leader>fk",
+        function()
+          P.keymaps()
+        end,
+        desc = "Keymaps",
+      },
+      {
+        "<leader>fm",
+        function()
+          P.marks()
+        end,
+        desc = "Marks",
+      },
+      {
+        "<leader>fj",
+        function()
+          P.jumps()
+        end,
+        desc = "Jumps",
+      },
+
+      -- LSP pickers
+      {
+        "gd",
+        function()
+          P.lsp_definitions()
+        end,
+        desc = "LSP: Go to Definition",
+      },
+      {
+        "gr",
+        function()
+          P.lsp_references()
+        end,
+        desc = "LSP: References",
+      },
+      {
+        "gi",
+        function()
+          P.lsp_implementations()
+        end,
+        desc = "LSP: Implementations",
+      },
+      {
+        "gt",
+        function()
+          P.lsp_type_definitions()
+        end,
+        desc = "LSP: Type Definitions",
+      },
+
+      -- Git pickers
+      {
+        "<leader>gs",
+        function()
+          P.git_status()
+        end,
+        desc = "Git Status",
+      },
+      {
+        "<leader>gc",
+        function()
+          P.git_log()
+        end,
+        desc = "Git Commits",
+      },
+      {
+        "<leader>gb",
+        function()
+          P.git_branches()
+        end,
+        desc = "Git Branches",
       },
     }
   end,
