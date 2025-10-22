@@ -1,7 +1,8 @@
 -- snacks.nvim aggregated replacement layer
 -- Centralizes core UX previously provided by fzf-lua, telescope, nvim-tree,
 -- noice/nvim-notify, indent-blankline/indentscope, toggleterm (partial), etc.
--- Rollback: remove this spec & re-enable the old plugin specs (they remain commented in their files after migration).
+-- Rollback: remove this spec & re-enable the old plugin specs (they remain
+-- commented in their files after migration).
 
 return {
   "folke/snacks.nvim",
@@ -110,7 +111,7 @@ return {
             { win = "input", height = 1, border = "bottom" },
             { win = "list", border = "none" },
           },
-          { win = "preview", title = "{preview}", border = "rounded", width = 0.3 },
+          { win = "preview", title = "{preview}", border = "rounded", width = 0.4 },
         },
       },
       -- layout = {
