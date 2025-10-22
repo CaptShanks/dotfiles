@@ -93,7 +93,7 @@ vim.api.nvim_create_autocmd("TextYankPost", {
 
 -- setting language to en_us
 vim.opt.spelllang = "en_us"
-vim.opt.spell = true
+vim.opt.spell = false
 
 -- BACKGROUND COLOR FOR INACTIVE WINDOWS
 -- Global Function to apply background color based on window state
