@@ -264,10 +264,10 @@ tmuxs () {
 				tmux new-session -s 0 -d
 				# windows setup
 				#tmux kill-window -t 0
-				tmux new-window -d -t 2 -n "infrastructure" -c "$HOME/Documents/git/infrastructure/"
-				tmux new-window -d -t 3 -n "cloud-infra" -c "$HOME/Documents/git/cloud-infra/"
-				tmux new-window -d -t 4 -n "devops_k8s" -c "$HOME/Documents/git/devops_k8s/"
-				tmux new-window -d -t 5 -n "ghix_devops" -c "$HOME/Documents/git/ghix_devops/"
+				tmux new-window -d -t 2 -n "git" -c "$HOME/Documents/git/infrastructure/"
+				tmux new-window -d -t 3 -n "dotfiles" -c "$HOME/dotfiles/"
+				tmux new-window -d -t 4 -n "rename2" -c "$HOME/Documents/git/"
+				tmux new-window -d -t 5 -n "rename3" -c "$HOME/Documents/git/"
 				tmux new-window -d -t 6 -n "temp" -c "$HOME/temp"
 				tmux new-window -d -t 7 -n "Downloads" -c "$HOME/Downloads"
 				tmux new-window -d -t 8 -n "open" -c "$HOME"

@@ -18,7 +18,7 @@ ARCH := $(shell uname -m)
 IS_ARM64 := $(shell test "$(ARCH)" = "arm64" && echo "yes" || echo "no")
 
 # Stow packages (directory names in dotfiles)
-STOW_PACKAGES := zsh tmux wezterm nvim starship k9s opencode
+STOW_PACKAGES := zsh tmux wezterm nvim starship k9s opencode atuin
 
 help: ## Show this help message
 	@echo "$(BLUE)Dotfiles Makefile for Mac M1/Apple Silicon$(NC)"
@@ -85,9 +85,12 @@ install-packages: install-brew ## Install essential packages via Homebrew
 		fd \
 		ripgrep \
 		eza \
+		lazygit \
+		bash \
 		zoxide \
 		thefuck \
 		go \
+		colordiff \
 		nvm \
 		kubectl \
 		helm \
@@ -96,6 +99,7 @@ install-packages: install-brew ## Install essential packages via Homebrew
 		jq \
 		yq \
 		tree \
+		telnet \
 		htop \
 		curl \
 		wget \

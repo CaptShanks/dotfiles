@@ -1,0 +1,23 @@
+# Themes
+theme = dark:TokyoNight Night,light:Builtin Light
+font-family = FiraCode Nerd Font Propo
+minimum-contrast = 1.1
+font-thicken = 1
+adjust-cell-height = 40%
+font-size = 16
+shell-integration = zsh
+
+# in bites, need 100mb
+scrollback-limit = 104857600
+
+# opacity
+background-opacity = .9
+background-blur-radius = 20
+
+# view
+#macos-titlebar-style = hidden
+
+# keybinds
+keybind = super+i=inspector:toggle
+
+confirm-close-surface = false
