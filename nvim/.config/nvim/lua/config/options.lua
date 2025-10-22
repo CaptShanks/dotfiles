@@ -144,12 +144,11 @@ vim.api.nvim_create_autocmd({ "VimEnter", "FocusGained" }, {
 -- Treesitter: enable highlighting and indentation via native APIs
 vim.api.nvim_create_autocmd('FileType', {
   pattern = {
-    'lua','javascript','typescript','tsx','html','css','json','yaml','terraform','terraform-vars',
-    'bash','vim','markdown','java','groovy','graphql','dockerfile','hcl'
+    'lua','javascript','typescript','tsx','html','css','json','yaml','bash','vim','markdown','java','groovy','graphql','dockerfile','hcl'
   },
-  callback = function()
-    vim.treesitter.start()
-    vim.bo.indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
+  callback = function(args)
+    vim.treesitter.start(args.buf)
+    vim.bo[args.buf].indentexpr = "v:lua.require'nvim-treesitter'.indentexpr()"
   end,
 })
 

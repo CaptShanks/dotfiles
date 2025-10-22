@@ -9,16 +9,15 @@ return {
   config = function()
     -- Treesitter main-branch setup
 
-    -- map Terraform filetypes to HCL parser
-    pcall(function()
-      vim.treesitter.language.register("hcl", "terraform")
-      vim.treesitter.language.register("hcl", "terraform-vars")
-    end)
-
     -- core setup
+    local install_dir = vim.fn.stdpath('data') .. '/site'
     require('nvim-treesitter').setup({
-      install_dir = vim.fn.stdpath('data') .. '/site'
+      install_dir = install_dir,
     })
+    -- ensure Neovim can find installed parsers/queries
+    pcall(function()
+      vim.opt.runtimepath:append(install_dir)
+    end)
 
     -- install parsers (async)
     require('nvim-treesitter').install({
