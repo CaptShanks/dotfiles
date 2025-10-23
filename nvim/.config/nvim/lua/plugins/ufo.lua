@@ -1,14 +1,13 @@
 return {
   {
     "kevinhwang91/nvim-ufo",
-    enabled = false,
+    enabled = true,
     dependencies = {
       "kevinhwang91/promise-async",
     },
     config = function()
       -- Neovim code-fold settings
-      vim.opt.foldmethod = 'expr'
-      vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
+      vim.opt.foldmethod = 'manual'
       vim.opt.foldcolumn = '1'
       vim.opt.foldtext = ''
       vim.opt.foldlevel = 99
@@ -48,7 +47,7 @@ return {
 
        require("ufo").setup({
          provider_selector = function(bufnr, filetype, buftype)
-           return { "treesitter", "indent" }
+           return { "lsp", "indent" }
          end,
          fold_virt_text_handler = handler,
        })

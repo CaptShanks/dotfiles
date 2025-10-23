@@ -27,12 +27,6 @@ return {
     })
 
     -- enable features via native Neovim APIs below
-    -- enable folding via Treesitter
-    vim.opt.foldmethod = 'expr'
-    vim.opt.foldexpr = 'v:lua.vim.treesitter.foldexpr()'
-    vim.opt.foldlevel = 99
-    vim.opt.foldlevelstart = 99
-    vim.opt.foldenable = true
 
 
 
