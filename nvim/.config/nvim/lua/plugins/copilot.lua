@@ -4,7 +4,7 @@ return {
   event = "InsertEnter",
   build = ":Copilot auth",
   opts = {
-    -- for lua-cmp
+    -- for blink-cmp
     suggestion = {
       enabled = false,
       auto_trigger = true,
