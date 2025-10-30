@@ -6,17 +6,13 @@ return {
       "kevinhwang91/promise-async",
     },
     config = function()
-      -- Neovim code-fold settings
-      vim.opt.foldmethod = 'manual'
+      -- UFO fold settings - let UFO manage foldmethod/foldexpr
       vim.opt.foldcolumn = '1'
-      vim.opt.foldtext = ''
       vim.opt.foldlevel = 99
       vim.opt.foldlevelstart = 99
-      vim.opt.foldnestmax = 4
       vim.opt.foldenable = true
-      vim.keymap.set("n", "zR", require("ufo").openAllFolds)
-      vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
-
+      
+      -- Custom fold text handler
       local handler = function(virtText, lnum, endLnum, width, truncate)
         local newVirtText = {}
         local suffix = (" 󰁂 %d "):format(endLnum - lnum)
@@ -45,12 +41,17 @@ return {
         return newVirtText
       end
 
-       require("ufo").setup({
-         provider_selector = function(bufnr, filetype, buftype)
-           return { "lsp", "indent" }
-         end,
-         fold_virt_text_handler = handler,
-       })
+      -- Setup UFO (must be called before setting keymaps)
+      require("ufo").setup({
+        provider_selector = function(bufnr, filetype, buftype)
+          return { "lsp", "indent" }
+        end,
+        fold_virt_text_handler = handler,
+      })
+      
+      -- Keymaps for UFO
+      vim.keymap.set("n", "zR", require("ufo").openAllFolds)
+      vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
     end,
   },
 }
