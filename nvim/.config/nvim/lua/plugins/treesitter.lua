@@ -12,6 +12,9 @@ return {
       install_dir = vim.fn.stdpath('data') .. '/site',
     })
 
+    -- Map terraform-vars filetype to hcl parser (terraform-vars has no dedicated parser)
+    vim.treesitter.language.register('hcl', 'terraform-vars')
+
     -- Install parsers (async, only if not already installed)
     require('nvim-treesitter').install({
       'java', 'hcl', 'groovy', 'json', 'javascript', 'typescript', 'tsx', 'yaml', 'html', 'css',

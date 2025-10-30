@@ -141,6 +141,9 @@ vim.api.nvim_create_autocmd({ "VimEnter", "FocusGained" }, {
     end
   end,
 })
+-- Map terraform-vars filetype to hcl parser (for Treesitter folding/highlighting)
+vim.treesitter.language.register('hcl', 'terraform-vars')
+
 -- Treesitter: enable highlighting and indentation via native APIs
 vim.api.nvim_create_autocmd('FileType', {
   pattern = {
