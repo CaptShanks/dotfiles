@@ -166,6 +166,7 @@ return {
         grep = {
           hidden = false,
           ignored = false,
+          follow = true,
           regex = true,
           live = true,
           need_search = true,
