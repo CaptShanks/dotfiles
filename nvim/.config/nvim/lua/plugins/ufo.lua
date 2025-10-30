@@ -2,7 +2,7 @@ return {
   {
     "kevinhwang91/nvim-ufo",
     enabled = true,
-    event = "VeryLazy",
+    lazy = false,
     dependencies = {
       "kevinhwang91/promise-async",
     },
@@ -48,6 +48,12 @@ return {
           -- UFO only supports {main, fallback} - max 2 providers
           -- Use Treesitter (accurate for languages with fold queries) > Indent (universal fallback)
           -- Can also use: { "lsp", "indent" } if LSP folding is preferred
+          
+          -- Debug: force indent provider for terraform-vars to test
+          if filetype == "terraform-vars" then
+            return { "indent" }
+          end
+          
           return { "treesitter", "indent" }
         end,
         fold_virt_text_handler = handler,
