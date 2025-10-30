@@ -265,7 +265,7 @@ tmuxs () {
 				# windows setup
 				#tmux kill-window -t 0
 				tmux new-window -d -t 2 -n "git" -c "$HOME/Documents/git/infrastructure/"
-				tmux new-window -d -t 3 -n "dotfiles" -c "$HOME/dotfiles/"
+				tmux new-window -d -t 3 -n "rename1" -c "$HOME/Documents/git/"
 				tmux new-window -d -t 4 -n "rename2" -c "$HOME/Documents/git/"
 				tmux new-window -d -t 5 -n "rename3" -c "$HOME/Documents/git/"
 				tmux new-window -d -t 6 -n "temp" -c "$HOME/temp"

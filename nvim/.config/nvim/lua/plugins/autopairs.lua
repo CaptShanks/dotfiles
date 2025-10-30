@@ -2,7 +2,7 @@ return {
   "windwp/nvim-autopairs",
   event = { "InsertEnter" },
   dependencies = {
-    "hrsh7th/nvim-cmp",
+    "saghen/blink.cmp",
   },
   enabled = true,
   config = function()
@@ -19,13 +19,7 @@ return {
       },
     })
 
-    -- import nvim-autopairs completion functionality
-    local cmp_autopairs = require("nvim-autopairs.completion.cmp")
-
-    -- import nvim-cmp plugin (completions plugin)
-    local cmp = require("cmp")
-
-    -- make autopairs and completion work together
-    cmp.event:on("confirm_done", cmp_autopairs.on_confirm_done())
+    -- Rely on blink.cmp's built-in auto_brackets on accept
+    -- (see blink-cmp.lua: completion.accept.auto_brackets.enabled = true)
   end,
 }
