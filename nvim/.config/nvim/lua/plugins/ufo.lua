@@ -47,21 +47,45 @@ return {
         provider_selector = function(bufnr, filetype, buftype)
           -- UFO only supports {main, fallback} - max 2 providers
           -- Use Treesitter (accurate for languages with fold queries) > Indent (universal fallback)
-          -- Can also use: { "lsp", "indent" } if LSP folding is preferred
-          
-          -- Debug: force indent provider for terraform-vars to test
-          if filetype == "terraform-vars" then
-            return { "indent" }
-          end
-          
           return { "treesitter", "indent" }
         end,
         fold_virt_text_handler = handler,
+        open_fold_hl_timeout = 400,
+        close_fold_kinds_for_ft = {},
+        enable_get_fold_virt_text = false,
       })
       
       -- Keymaps for UFO
       vim.keymap.set("n", "zR", require("ufo").openAllFolds)
       vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
+      
+      -- Auto-refresh UFO for terraform-vars files (workaround for fold not updating)
+      vim.api.nvim_create_autocmd("FileType", {
+        pattern = "terraform-vars",
+        callback = function(args)
+          local ufo = require("ufo")
+          -- Delay attachment to ensure treesitter is ready
+          vim.defer_fn(function()
+            if vim.api.nvim_buf_is_valid(args.buf) then
+              ufo.detach(args.buf)
+              ufo.attach(args.buf)
+            end
+          end, 100)
+        end,
+      })
+      
+      -- Force UFO to refresh folds
+      vim.api.nvim_create_user_command("UfoRefresh", function()
+        local ufo = require("ufo")
+        local bufnr = vim.api.nvim_get_current_buf()
+        
+        -- Detach and reattach UFO
+        ufo.detach(bufnr)
+        vim.wait(100)
+        ufo.attach(bufnr)
+        
+        print("UFO refreshed for buffer " .. bufnr)
+      end, {})
       
       -- Debug command for terraform-vars folding
       vim.api.nvim_create_user_command("UfoDebug", function()
@@ -79,7 +103,33 @@ return {
         print("Current line: " .. line)
         print("Foldlevel at cursor: " .. vim.fn.foldlevel(line))
         print("Foldclosed at cursor: " .. vim.fn.foldclosed(line))
-        print("Parser lang: " .. (pcall(function() return vim.treesitter.get_parser(0):lang() end) and vim.treesitter.get_parser(0):lang() or "none"))
+        
+        -- Check parser
+        local parser_ok, parser = pcall(vim.treesitter.get_parser, 0)
+        if parser_ok and parser then
+          print("Parser lang: " .. parser:lang())
+          
+          -- Check for foldable nodes
+          local tree = parser:parse()[1]
+          local root = tree:root()
+          local fold_query = vim.treesitter.query.get(parser:lang(), 'folds')
+          
+          if fold_query then
+            local matches = {}
+            for id, node in fold_query:iter_captures(root, 0) do
+              local start_row = node:range()
+              table.insert(matches, {row = start_row + 1, type = node:type()})
+            end
+            print("Foldable nodes found: " .. #matches)
+            for _, m in ipairs(matches) do
+              print("  Line " .. m.row .. ": " .. m.type)
+            end
+          else
+            print("No fold query found for " .. parser:lang())
+          end
+        else
+          print("Parser: none")
+        end
       end, {})
     end,
   },
