@@ -56,8 +56,16 @@ return {
       })
       
       -- Keymaps for UFO
-      vim.keymap.set("n", "zR", require("ufo").openAllFolds)
-      vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
+      vim.keymap.set("n", "zR", require("ufo").openAllFolds, { desc = "Open all folds" })
+      vim.keymap.set("n", "zM", require("ufo").closeAllFolds, { desc = "Close all folds" })
+      vim.keymap.set("n", "zU", function()
+        local ufo = require("ufo")
+        local bufnr = vim.api.nvim_get_current_buf()
+        ufo.detach(bufnr)
+        vim.wait(100)
+        ufo.attach(bufnr)
+        print("UFO refreshed")
+      end, { desc = "Refresh UFO folds" })
       
       -- Auto-refresh UFO for terraform-vars files (workaround for fold not updating)
       vim.api.nvim_create_autocmd("FileType", {
