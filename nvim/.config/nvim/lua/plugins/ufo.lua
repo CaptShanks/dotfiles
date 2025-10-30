@@ -62,6 +62,25 @@ return {
       -- Keymaps for UFO
       vim.keymap.set("n", "zR", require("ufo").openAllFolds)
       vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
+      
+      -- Debug command for terraform-vars folding
+      vim.api.nvim_create_user_command("UfoDebug", function()
+        local ufo = require("ufo")
+        local bufnr = vim.api.nvim_get_current_buf()
+        local line = vim.fn.line(".")
+        
+        print("=== UFO Debug Info ===")
+        print("Filetype: " .. vim.bo.filetype)
+        print("Buftype: " .. vim.bo.buftype)
+        print("UFO attached: " .. tostring(ufo.hasAttached(bufnr)))
+        print("Foldmethod: " .. vim.wo.foldmethod)
+        print("Foldenable: " .. tostring(vim.wo.foldenable))
+        print("Foldlevel: " .. vim.wo.foldlevel)
+        print("Current line: " .. line)
+        print("Foldlevel at cursor: " .. vim.fn.foldlevel(line))
+        print("Foldclosed at cursor: " .. vim.fn.foldclosed(line))
+        print("Parser lang: " .. (pcall(function() return vim.treesitter.get_parser(0):lang() end) and vim.treesitter.get_parser(0):lang() or "none"))
+      end, {})
     end,
   },
 }
