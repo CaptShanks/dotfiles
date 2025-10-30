@@ -29,7 +29,7 @@ return {
         -- Markup/Documentation
         'markdown', 'html', 'css',
         -- DevOps/Infrastructure
-        'dockerfile', 'terraform', 'hcl',
+        'dockerfile', 'terraform', 'terraform-vars', 'hcl',
         -- Database
         'sql',
         -- Other

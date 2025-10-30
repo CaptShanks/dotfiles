@@ -38,6 +38,14 @@ vim.api.nvim_create_user_command("LspRestartInfo", function()
     vim.lsp.start(config)
   end
   
+  -- Ensure Treesitter highlighting is maintained after LSP restart
+  vim.defer_fn(function()
+    if vim.treesitter.highlighter.active[buf] then
+      vim.treesitter.stop(buf)
+    end
+    vim.treesitter.start(buf)
+  end, 100)
+  
   vim.notify("Restarted: " .. table.concat(client_names, ", "), vim.log.levels.INFO)
 end, { desc = "Restart LSP clients for current buffer using native LSP" })
 
