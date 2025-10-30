@@ -44,7 +44,10 @@ return {
       -- Setup UFO (must be called before setting keymaps)
       require("ufo").setup({
         provider_selector = function(bufnr, filetype, buftype)
-          return { "lsp", "indent" }
+          -- UFO only supports {main, fallback} - max 2 providers
+          -- Use Treesitter (accurate for languages with fold queries) > Indent (universal fallback)
+          -- Can also use: { "lsp", "indent" } if LSP folding is preferred
+          return { "treesitter", "indent" }
         end,
         fold_virt_text_handler = handler,
       })

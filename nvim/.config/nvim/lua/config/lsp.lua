@@ -13,6 +13,19 @@ local servers = {
   'kcl'
 }
 
+-- Add folding capabilities for UFO
+-- This enables LSP servers to provide folding range information
+vim.lsp.config('*', {
+  capabilities = {
+    textDocument = {
+      foldingRange = {
+        dynamicRegistration = false,
+        lineFoldingOnly = true
+      }
+    }
+  }
+})
+
 for _, server in ipairs(servers) do
   vim.lsp.enable(server)
 end
