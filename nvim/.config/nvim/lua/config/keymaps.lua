@@ -461,11 +461,42 @@ vim.api.nvim_create_user_command("TmuxOpenOpencodeContext", function()
   end
 end, { desc = "Open/focus opencode with proper git root/cwd context" })
 
--- <leader>ot to open/focus opencode with proper context (git root or cwd)
-keymap.set({ "n", "v" }, "<leader>ot", ":TmuxOpenOpencodeContext<CR>", {
+-- NEW: Embedded OpenCode toggle with smart context detection
+-- Priority: git root > ~/Documents/git > cwd
+keymap.set({ "n", "v" }, "<leader>ot", function()
+  local git_root = vim.fn.systemlist("git rev-parse --show-toplevel")[1]
+  local context_dir = vim.fn.getcwd() -- default to current working directory
+  local git_base = vim.fn.expand("~/Documents/git")
+
+  -- Priority 1: If in a git repo, use git root
+  if git_root and git_root ~= "" and vim.v.shell_error == 0 then
+    context_dir = git_root
+  -- Priority 2: If ~/Documents/git exists, use that
+  elseif vim.fn.isdirectory(git_base) == 1 then
+    context_dir = git_base
+  end
+  -- Priority 3: Fall back to cwd (already set)
+
+  -- Change to context directory before opening
+  local original_dir = vim.fn.getcwd()
+  vim.cmd("cd " .. vim.fn.fnameescape(context_dir))
+
+  require("opencode").toggle()
+
+  vim.notify("OpenCode opened with context: " .. context_dir, vim.log.levels.INFO)
+  
+  -- Note: We stay in the context directory for better opencode integration
+end, {
   noremap = true,
   silent = true,
-  desc = "Open/focus opencode with proper context",
+  desc = "Toggle embedded OpenCode",
+})
+
+-- <leader>oT to open/focus opencode in tmux pane with proper context (git root or cwd)
+keymap.set({ "n", "v" }, "<leader>oT", ":TmuxOpenOpencodeContext<CR>", {
+  noremap = true,
+  silent = true,
+  desc = "Open/focus opencode in tmux pane",
 })
 
 -- sV to create a new tmux pane vertically with the current buffer directory or current working directory
