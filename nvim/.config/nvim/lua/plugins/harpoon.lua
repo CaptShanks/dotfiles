@@ -13,6 +13,11 @@ return {
       harpoon:list():add()
     end, { desc = "Add current file to Harpoon list" })
 
+    vim.keymap.set("n", "<leader>hc", function()
+      harpoon:list():clear()
+      vim.notify("Harpoon list cleared", vim.log.levels.INFO)
+    end, { desc = "Clear Harpoon list" })
+
     vim.keymap.set("n", "<leader>hh", function()
       harpoon.ui:toggle_quick_menu(harpoon:list())
     end, { desc = "Toggle Harpoon list" })
