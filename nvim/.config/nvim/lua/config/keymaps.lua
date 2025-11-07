@@ -481,7 +481,14 @@ keymap.set({ "n", "v" }, "<leader>ot", function()
   local original_dir = vim.fn.getcwd()
   vim.cmd("cd " .. vim.fn.fnameescape(context_dir))
 
-  require("opencode").toggle()
+  -- Safely load opencode plugin (handles lazy-loading)
+  local ok, opencode = pcall(require, "opencode")
+  if not ok then
+    vim.notify("OpenCode plugin not available", vim.log.levels.ERROR)
+    return
+  end
+  
+  opencode.toggle()
 
   vim.notify("OpenCode opened with context: " .. context_dir, vim.log.levels.INFO)
   
