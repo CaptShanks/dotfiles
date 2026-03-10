@@ -15,12 +15,28 @@ vim.api.nvim_create_autocmd("FileType", {
   end,
 })
 
--- Add filetypes for terraform
+-- ============================================================================
+-- FILETYPE DETECTION
+-- ============================================================================
+-- Custom filetype detection for file extensions and patterns that nvim
+-- doesn't automatically recognize
+
+-- Terraform files
 vim.filetype.add({
   extension = {
     tf = "terraform",
     tfvars = "terraform-vars",
   },
+})
+
+-- Helm template files
+-- Detect YAML files in Helm chart templates/ directories as helm filetype
+-- to enable Go template syntax highlighting alongside YAML
+vim.api.nvim_create_autocmd({"BufRead", "BufNewFile"}, {
+  pattern = {"*/templates/*.yaml", "*/templates/*.yml", "*/templates/*.tpl"},
+  callback = function()
+    vim.bo.filetype = "helm"
+  end,
 })
 
 -- see non printable characters
@@ -147,7 +163,7 @@ vim.treesitter.language.register('hcl', 'terraform-vars')
 -- Treesitter: enable highlighting and indentation via native APIs
 vim.api.nvim_create_autocmd('FileType', {
   pattern = {
-    'lua','javascript','typescript','tsx','html','css','json','yaml','bash','vim','markdown','java','groovy','graphql','dockerfile','terraform','terraform-vars','hcl'
+    'lua','javascript','typescript','tsx','html','css','json','yaml','bash','vim','markdown','java','groovy','graphql','dockerfile','terraform','terraform-vars','hcl','helm'
   },
   callback = function(args)
     vim.treesitter.start(args.buf)

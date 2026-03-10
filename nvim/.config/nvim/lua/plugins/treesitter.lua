@@ -19,7 +19,7 @@ return {
     require('nvim-treesitter').install({
       'java', 'hcl', 'groovy', 'json', 'javascript', 'typescript', 'tsx', 'yaml', 'html', 'css',
       'markdown', 'markdown_inline', 'graphql', 'bash', 'lua', 'vim', 'dockerfile', 'gitignore',
-      'query', 'vimdoc', 'c', 'python', 'toml', 'sql', 'go', 'rust', 'terraform'
+      'query', 'vimdoc', 'c', 'python', 'toml', 'sql', 'go', 'rust', 'terraform', 'helm'
     })
 
     -- Enable treesitter highlighting for common filetypes
@@ -32,7 +32,7 @@ return {
         -- Markup/Documentation
         'markdown', 'html', 'css',
         -- DevOps/Infrastructure
-        'dockerfile', 'terraform', 'terraform-vars', 'hcl',
+        'dockerfile', 'terraform', 'terraform-vars', 'hcl', 'helm',
         -- Database
         'sql',
         -- Other
