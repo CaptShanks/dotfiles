@@ -3,6 +3,8 @@
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/.oh-my-zsh"
+DISABLE_AUTO_UPDATE="true"
+DISABLE_UPDATE_PROMPT="true"
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
@@ -13,7 +15,6 @@ ZSH_THEME="robbyrussell"
 plugins=(
 	fzf-tab
 	zsh-syntax-highlighting
-	ohmyzsh-full-autoupdate
 	vi-mode
 	zsh-autosuggestions
 )
@@ -58,7 +59,7 @@ setopt +o nomatch
 # zstyle ':bracketed-paste-magic' active-widgets '.self-*'
 
 # theme https://starship.rs/guide/#%F0%9F%9A%80-installation
-eval "$(starship init zsh)"
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
 
 # fzf https://github.com/junegunn/fzf#using-git
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -73,8 +74,11 @@ export FZF_CTRL_R_OPTS="--preview 'echo {2..}'
   --height 60%
   --header 'Press CTRL-Y to copy ucommand into clipboard'"
 
-# check is zoxide is install and source it
-[ -f $(which zoxide) ] && eval "$(zoxide init zsh)" && alias cd='z'
+# check if zoxide is installed and source it
+if command -v zoxide >/dev/null 2>&1; then
+	eval "$(zoxide init zsh)"
+	alias cd='z'
+fi
 
 # this will search dev folders with some ignores
 fcd() {
@@ -137,8 +141,10 @@ export PATH=/opt/homebrew/bin:$PATH       # arm brew (takes precedence)
 export DENO_INSTALL="/Users/sjc-lp03742/.deno"
 
 # thefuck
-eval $(thefuck --alias)
-eval $(thefuck --alias fk)
+if command -v thefuck >/dev/null 2>&1; then
+	eval "$(thefuck --alias)"
+	eval "$(thefuck --alias fk)"
+fi
 
 # # clear tmux history and screen
 # c() {
@@ -148,7 +154,8 @@ eval $(thefuck --alias fk)
 
 
 # GO
-export PATH=$PATH:$(go env GOPATH)/bin
+export GOPATH="${GOPATH:-$HOME/go}"
+export PATH="$PATH:$GOPATH/bin"
 
 # My BIN
 export PATH=$PATH:$HOME/bin
@@ -175,9 +182,18 @@ alias k="kubectl"
 alias ks="kubectl -n kube-system "
 alias ka="kubectl --all-namespaces=true "
 # Load kubectl completions
-source <(kubectl completion zsh)
+command -v kubectl >/dev/null 2>&1 && source <(kubectl completion zsh)
 # Define alias
 alias k=kubectl
+
+#assume -- granted
+alias ac="assume -c"
+alias at="assume -t"
+alias act="assume -c -t"
+
+# Personal cursor
+alias cursorperso='/Applications/Cursor_perso.app/Contents/MacOS/Cursor --user-data-dir=$HOME/.cursor-profile-2 --extensions-dir=$HOME/.cursor-profile-2/extensions'
+
 # Enable completion for the alias
 compdef k=kubectl
 compdef ks=kubectl
@@ -186,25 +202,30 @@ compdef ka=kubectl
 # Krew
 export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
-alias t="tofu"
-alias ti="tofu init"
-alias ta="tofu apply"
-alias tp="tofu plan"
-alias td="tofu destroy"
-alias to='tofu output -json | jq "reduce to_entries[] as \$entry ({}; .[\$entry.key] = \$entry.value.value)"'
+
+export TERRAPRISM_TOFU=true
+alias t="terraprism"
+alias ti="terraprism init"
+alias ta="terraprism apply"
+alias tp="terraprism plan"
+alias td="terraprism destroy"
+alias th="terraprism history"
+alias to='terraprism output -json | jq "reduce to_entries[] as \$entry ({}; .[\$entry.key] = \$entry.value.value)"'
 
 
-alias tf="terraform"
-alias tfi="terraform init"
-alias tfa="terraform apply"
-alias tfd="terraform destroy"
-alias tfo='terraform output -json | jq "reduce to_entries[] as \$entry ({}; .[\$entry.key] = \$entry.value.value)"'
+alias tf="terraprism"
+alias tfi="terraprism init"
+alias tfp="terraprism plan"
+alias tfa="terraprism apply"
+alias tfd="terraprism destroy"
+alias tfh="terraprism history"
+alias tfo='terraprism output -json | jq "reduce to_entries[] as \$entry ({}; .[\$entry.key] = \$entry.value.value)"'
 alias n="nvim ."
 
 
 
 # check if eza is installed start code block
-if [ -f $(which eza) ]; then
+if command -v eza >/dev/null 2>&1; then
 	# eza is installed
 	alias ls="eza --icons=auto"
 fi
@@ -252,33 +273,29 @@ bindkey '^L' clearx
 # check if $TERM_PROGRAM == iTerm.app variable set to identify terminal
 
 tmuxs () {
-	# tmux process detection, only go here is we are not in tmux
-	if [ "$TMUX" = "" ]; then
-		if [ -n "$NVIM_LISTEN_ADDRESS" ]; then
-			echo "We are in nvim terminal"
-		else
-			tmux attach-session -t 0
-			# if above fails, create new session with non 0 exit code
-			if [ $? -ne 0 ]; then
-				# session setup in background
-				tmux new-session -s 0 -d
-				# windows setup
-				#tmux kill-window -t 0
-				tmux new-window -d -t 2 -n "git" -c "$HOME/Documents/git/infrastructure/"
-				tmux new-window -d -t 3 -n "rename1" -c "$HOME/Documents/git/"
-				tmux new-window -d -t 4 -n "rename2" -c "$HOME/Documents/git/"
-				tmux new-window -d -t 5 -n "rename3" -c "$HOME/Documents/git/"
-				tmux new-window -d -t 6 -n "temp" -c "$HOME/temp"
-				tmux new-window -d -t 7 -n "Downloads" -c "$HOME/Downloads"
-				tmux new-window -d -t 8 -n "open" -c "$HOME"
-				# attach to new session
-				tmux attach-session -t 0
-			fi
-
-		fi
-
+	if [[ -n "$TMUX" ]]; then
+		return 0
 	fi
 
+	if [[ -n "$NVIM_LISTEN_ADDRESS" ]]; then
+		echo "tmuxs skipped inside Neovim terminal"
+		return 1
+	fi
+
+	local session="main"
+
+	if ! tmux has-session -t "$session" 2>/dev/null; then
+		tmux new-session -d -s "$session" -n "home" -c "$HOME"
+		tmux new-window -d -t "${session}:2" -n "git" -c "$HOME/Documents/git/infrastructure/"
+		tmux new-window -d -t "${session}:3" -n "rename1" -c "$HOME/Documents/git/"
+		tmux new-window -d -t "${session}:4" -n "rename2" -c "$HOME/Documents/git/"
+		tmux new-window -d -t "${session}:5" -n "rename3" -c "$HOME/Documents/git/"
+		tmux new-window -d -t "${session}:6" -n "temp" -c "$HOME/temp"
+		tmux new-window -d -t "${session}:7" -n "Downloads" -c "$HOME/Downloads"
+		tmux new-window -d -t "${session}:8" -n "open" -c "$HOME"
+	fi
+
+	exec tmux attach-session -t "$session"
 }
 # TF autocomplete
 # autoload -U +X bashcompinit && bashcompinit
@@ -287,7 +304,7 @@ tmuxs () {
 # carapace shell-autocomplete
 export CARAPACE_BRIDGES='zsh,fish,bash,inshellisense' # optional
 zstyle ':completion:*' format $'\e[2;37mCompleting %d\e[m'
-source <(carapace _carapace)
+command -v carapace >/dev/null 2>&1 && source <(carapace _carapace zsh)
 
 # Check if stern is installed if so enable completion
 # [ -f $(which stern) ] && source <(stern --completion=zsh)
@@ -303,22 +320,22 @@ export AWS_SDK_LOAD_CONFIG=1
 export TF_FORCE_LOCAL_BACKEND=1
 
 # >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/opt/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/opt/anaconda3/etc/profile.d/conda.sh" ]; then
-        . "/opt/anaconda3/etc/profile.d/conda.sh"
-    else
-        export PATH="/opt/anaconda3/bin:$PATH"
-    fi
+# Prefer the static profile script to avoid spawning `conda shell.zsh hook` on every shell startup.
+if [ -f "/opt/anaconda3/etc/profile.d/conda.sh" ]; then
+    . "/opt/anaconda3/etc/profile.d/conda.sh"
+elif [ -d "/opt/anaconda3/bin" ]; then
+    export PATH="/opt/anaconda3/bin:$PATH"
 fi
-unset __conda_setup
 # <<< conda initialize <<<
 
-. "$HOME/.atuin/bin/env"
+if [ -f "$HOME/.atuin/bin/env" ]; then
+	. "$HOME/.atuin/bin/env"
+fi
 
-eval "$(atuin init zsh)"
+command -v atuin >/dev/null 2>&1 && eval "$(atuin init zsh)"
 
-[[ "$TERM_PROGRAM" == "kiro" ]] && . "$(kiro --locate-shell-integration-path zsh)"
+[[ "$TERM_PROGRAM" == "kiro" ]] && command -v kiro >/dev/null 2>&1 && . "$(kiro --locate-shell-integration-path zsh)"
+command -v /usr/libexec/java_home >/dev/null 2>&1 && export JAVA_HOME=$(/usr/libexec/java_home)
+export PATH="/opt/homebrew/opt/openjdk@11/bin:$PATH"
+export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"

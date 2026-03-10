@@ -2,7 +2,7 @@
 -- Based on original main branch configuration with comprehensive keybindings
 return {
   "ibhagwan/fzf-lua",
-  enabled = false, -- Disabled: migrated to snacks-picker
+  enabled = true,
   -- optional for icon support
   dependencies = { "nvim-tree/nvim-web-devicons" },
   config = function()

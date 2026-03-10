@@ -1,10 +1,12 @@
 return {
   "cormacrelf/dark-notify",
-  enabled = false, -- set to true to enable
+  enabled = true, -- set to true to enable
+  lazy = false,
+  priority = 1001, -- Load after colorscheme plugins (priority 1000)
   config = function()
     -- Theme Configuration - Change only these two lines!
     local DARK_THEME = "tokyonight-night"
-    local LIGHT_THEME = "tokyonight-day"
+    local LIGHT_THEME = "dayfox"
 
     local dn = require("dark_notify")
 

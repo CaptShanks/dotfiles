@@ -92,7 +92,7 @@ return {
     },
     lazygit = { enabled = true },
     picker = {
-      enabled = true,
+      enabled = false, -- Disabled in favor of fzf-lua
       prompt = " ",
       focus = "input",
       ui_select = true,
@@ -316,187 +316,175 @@ return {
         desc = "Terminal Toggle",
       },
 
-      -- Core pickers
-      {
-        "<leader><space>",
-        function()
-          P.smart()
-        end,
-        desc = "Smart Find",
-      },
-      {
-        "<leader>fb",
-        function()
-          P.buffers()
-        end,
-        desc = "Buffers",
-      },
-
-      -- File pickers
-      {
-        "<leader>ff",
-        function()
-          P.files({ cwd = vim.fn.getcwd() })
-        end,
-        desc = "Files (CWD)",
-      },
-      {
-        "<leader>fF",
-        function()
-          P.files({ cwd = vim.fn.expand("%:p:h") })
-        end,
-        desc = "Find Files (current dir)",
-      },
-      {
-        "<leader>fr",
-        function()
-          P.recent()
-        end,
-        desc = "Recent Files",
-      },
-      {
-        "<leader>fR",
-        function()
-          P.recent({ filter = { cwd = true } })
-        end,
-        desc = "Recent Files (cwd)",
-      },
-
-      -- Grep/Search pickers
-      {
-        "<leader>fs",
-        function()
-          P.grep()
-        end,
-        desc = "Live Grep",
-      },
-      {
-        "<leader>fd",
-        function()
-          P.grep({ cwd = vim.fn.expand("%:p:h") })
-        end,
-        desc = "Grep (current dir)",
-      },
-      {
-        "<leader>fD",
-        function()
-          P.grep({ cwd = vim.fn.expand("%:p:h"), live = true })
-        end,
-        desc = "Live Grep (current dir)",
-      },
-      {
-        "<leader>fc",
-        function()
-          P.grep_word()
-        end,
-        desc = "Grep word under cursor",
-      },
-      {
-        "<leader>fl",
-        function()
-          P.lines()
-        end,
-        desc = "Lines in open buffers",
-      },
-
-      -- Commands and History
-      {
-        "<leader>:",
-        function()
-          P.commands()
-        end,
-        desc = "Commands",
-      },
-      {
-        "q:",
-        function()
-          P.command_history()
-        end,
-        desc = "Command History",
-      },
-
-      -- Additional pickers
-      {
-        "<leader>fh",
-        function()
-          P.help()
-        end,
-        desc = "Help Tags",
-      },
-      {
-        "<leader>fk",
-        function()
-          P.keymaps()
-        end,
-        desc = "Keymaps",
-      },
-      {
-        "<leader>fm",
-        function()
-          P.marks()
-        end,
-        desc = "Marks",
-      },
-      {
-        "<leader>fj",
-        function()
-          P.jumps()
-        end,
-        desc = "Jumps",
-      },
-
-      -- LSP pickers
-      {
-        "gd",
-        function()
-          P.lsp_definitions()
-        end,
-        desc = "LSP: Go to Definition",
-      },
-      {
-        "gr",
-        function()
-          P.lsp_references()
-        end,
-        desc = "LSP: References",
-      },
-      {
-        "gi",
-        function()
-          P.lsp_implementations()
-        end,
-        desc = "LSP: Implementations",
-      },
-      {
-        "gt",
-        function()
-          P.lsp_type_definitions()
-        end,
-        desc = "LSP: Type Definitions",
-      },
-
-      -- Git pickers
-      {
-        "<leader>gs",
-        function()
-          P.git_status()
-        end,
-        desc = "Git Status",
-      },
-      {
-        "<leader>gc",
-        function()
-          P.git_log()
-        end,
-        desc = "Git Commits",
-      },
-      {
-        "<leader>gb",
-        function()
-          P.git_branches()
-        end,
-        desc = "Git Branches",
-      },
+      -- Picker keybindings disabled in favor of fzf-lua
+      -- {
+      --   "<leader><space>",
+      --   function()
+      --     P.smart()
+      --   end,
+      --   desc = "Smart Find",
+      -- },
+      -- {
+      --   "<leader>fb",
+      --   function()
+      --     P.buffers()
+      --   end,
+      --   desc = "Buffers",
+      -- },
+      -- {
+      --   "<leader>ff",
+      --   function()
+      --     P.files({ cwd = vim.fn.getcwd() })
+      --   end,
+      --   desc = "Files (CWD)",
+      -- },
+      -- {
+      --   "<leader>fF",
+      --   function()
+      --     P.files({ cwd = vim.fn.expand("%:p:h") })
+      --   end,
+      --   desc = "Find Files (current dir)",
+      -- },
+      -- {
+      --   "<leader>fr",
+      --   function()
+      --     P.recent()
+      --   end,
+      --   desc = "Recent Files",
+      -- },
+      -- {
+      --   "<leader>fR",
+      --   function()
+      --     P.recent({ filter = { cwd = true } })
+      --   end,
+      --   desc = "Recent Files (cwd)",
+      -- },
+      -- {
+      --   "<leader>fs",
+      --   function()
+      --     P.grep()
+      --   end,
+      --   desc = "Live Grep",
+      -- },
+      -- {
+      --   "<leader>fd",
+      --   function()
+      --     P.grep({ cwd = vim.fn.expand("%:p:h") })
+      --   end,
+      --   desc = "Grep (current dir)",
+      -- },
+      -- {
+      --   "<leader>fD",
+      --   function()
+      --     P.grep({ cwd = vim.fn.expand("%:p:h"), live = true })
+      --   end,
+      --   desc = "Live Grep (current dir)",
+      -- },
+      -- {
+      --   "<leader>fc",
+      --   function()
+      --     P.grep_word()
+      --   end,
+      --   desc = "Grep word under cursor",
+      -- },
+      -- {
+      --   "<leader>fl",
+      --   function()
+      --     P.lines()
+      --   end,
+      --   desc = "Lines in open buffers",
+      -- },
+      -- {
+      --   "<leader>:",
+      --   function()
+      --     P.commands()
+      --   end,
+      --   desc = "Commands",
+      -- },
+      -- {
+      --   "q:",
+      --   function()
+      --     P.command_history()
+      --   end,
+      --   desc = "Command History",
+      -- },
+      -- {
+      --   "<leader>fh",
+      --   function()
+      --     P.help()
+      --   end,
+      --   desc = "Help Tags",
+      -- },
+      -- {
+      --   "<leader>fk",
+      --   function()
+      --     P.keymaps()
+      --   end,
+      --   desc = "Keymaps",
+      -- },
+      -- {
+      --   "<leader>fm",
+      --   function()
+      --     P.marks()
+      --   end,
+      --   desc = "Marks",
+      -- },
+      -- {
+      --   "<leader>fj",
+      --   function()
+      --     P.jumps()
+      --   end,
+      --   desc = "Jumps",
+      -- },
+      -- {
+      --   "gd",
+      --   function()
+      --     P.lsp_definitions()
+      --   end,
+      --   desc = "LSP: Go to Definition",
+      -- },
+      -- {
+      --   "gr",
+      --   function()
+      --     P.lsp_references()
+      --   end,
+      --   desc = "LSP: References",
+      -- },
+      -- {
+      --   "gi",
+      --   function()
+      --     P.lsp_implementations()
+      --   end,
+      --   desc = "LSP: Implementations",
+      -- },
+      -- {
+      --   "gt",
+      --   function()
+      --     P.lsp_type_definitions()
+      --   end,
+      --   desc = "LSP: Type Definitions",
+      -- },
+      -- {
+      --   "<leader>gs",
+      --   function()
+      --     P.git_status()
+      --   end,
+      --   desc = "Git Status",
+      -- },
+      -- {
+      --   "<leader>gc",
+      --   function()
+      --     P.git_log()
+      --   end,
+      --   desc = "Git Commits",
+      -- },
+      -- {
+      --   "<leader>gb",
+      --   function()
+      --     P.git_branches()
+      --   end,
+      --   desc = "Git Branches",
+      -- },
     }
   end,
   config = function(_, opts)

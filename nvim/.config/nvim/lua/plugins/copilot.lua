@@ -3,6 +3,7 @@ return {
   cmd = "Copilot",
   event = "InsertEnter",
   build = ":Copilot auth",
+  enabled = false,
   opts = {
     -- for blink-cmp
     suggestion = {
